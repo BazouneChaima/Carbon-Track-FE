@@ -116,14 +116,14 @@ const DropdownTarget: React.FC<DropdownProps> = ({ target }) => {
             </ListItemIcon>
             <ListItemText primary="Delete" />
           </MenuItem>
-          <Divider variant="middle" />
+      {/*     <Divider variant="middle" />
           <MenuItem onClick={handleAssign} sx={itemMenu}>
             <ListItemIcon>
               {' '}
               <AssignIcon />{' '}
             </ListItemIcon>
             <ListItemText primary="Assign" />
-          </MenuItem>
+          </MenuItem> */}
         </Box>
       </Menu>
       <DeleteConfirmation open={isDeleteOpen} setOpen={setIsDeleteOpen} handleDelete={handleDelete} />

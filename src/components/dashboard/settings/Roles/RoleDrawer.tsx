@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setRoles } from '@/lib/store/reducer/useRole';
 import { body, FooterBody, FooterBox, header } from '@/styles/theme/Bottom-drawer';
 import { Role } from '@/types/role';
-
+import { setOpenToast } from '@/lib/store/reducer/useGlobalActions';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -109,16 +109,20 @@ const RoleDrawer: React.FC<RoleDrawerProps> = ({ open, handleCancelRole, users, 
       const { error } = await roleApis.updateRole(newRoleData);
       if (error) {
         console.log("Update error:", error);
+        dispatch(setOpenToast({ message: error, type: 'error' }));
         return;
       }
+      dispatch(setOpenToast({ message: 'Role Updated Successfully', type: 'success' }));
       const updatedRoles = roles.map((r) => (r._id === newRoleData._id ? newRoleData : r));
       dispatch(setRoles(updatedRoles));
     } else {
       const { res, error } = await roleApis.createRole(newRoleData);
       if (error) {
-        console.log("Create error:", error);
+        dispatch(setOpenToast({ message: error, type: 'error' }));
         return;
       }
+
+   dispatch(setOpenToast({ message: 'Role Added Successfully', type: 'success' }));
       dispatch(setRoles([...roles, res?.role]));  
     console.log("add ",res.role) 
     }

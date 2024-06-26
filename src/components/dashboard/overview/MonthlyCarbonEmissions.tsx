@@ -57,7 +57,7 @@ export function MonthlyCarbonEmissions({ sx, dataEmission,dataEmissionTarget }: 
   };
 
   return (
-    <Card sx={sx}>
+    <Card id="monthlyCarbonId" sx={sx}>
       <CardHeader title="Monthly Carbon Emissions" />
       <CardContent>
         <Chart type="area" series={guestSeries} options={guestOption} height={350} />

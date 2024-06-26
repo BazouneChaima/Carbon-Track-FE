@@ -23,8 +23,9 @@ import { User } from '@/types/user';
 
 import { Target } from '@/types/target';
 import { setTargets } from '@/lib/store/reducer/useTarget';
-import { targetApis } from '@/lib/target/targetApis';
+import { targetApis } from '@/lib/target/targetApis'; 
 import { setOpenToast } from '@/lib/store/reducer/useGlobalActions';
+
 interface DropdownTaskProps { 
   task: Task;
 }
@@ -58,6 +59,7 @@ const DropdownTask: React.FC<DropdownTaskProps> = ({ task }) => {
 
     const { error, res } = await taskApis.updateTask(data);
     if (error) {
+      dispatch(setOpenToast({ message: error, type: 'error' }));
       return;
     } else { 
 
@@ -67,6 +69,7 @@ const DropdownTask: React.FC<DropdownTaskProps> = ({ task }) => {
         }
         return tar;
       });
+      dispatch(setOpenToast({ message: 'Task Updated Successfully', type: 'success' }));
       //setIsDeleteOpen(false);
       dispatch(setTasks(newTasks));
       setIsUpdate(false)
@@ -126,6 +129,7 @@ const DropdownTask: React.FC<DropdownTaskProps> = ({ task }) => {
       const indexToRemove = tasks.indexOf(task);
       const newTasks = tasks.filter((_: any, i: any) => i !== indexToRemove);
       setIsDeleteOpen(false);
+      dispatch(setOpenToast({ message: 'Task Deleted Successfully', type: 'success' }));
       dispatch(setTasks(newTasks));
     }
 

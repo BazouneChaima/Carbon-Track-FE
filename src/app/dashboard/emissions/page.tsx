@@ -18,6 +18,15 @@ import { MuiButton } from '@/styles/theme/components/button';
 import { setTargets } from '@/lib/store/reducer/useTarget';
 import { Target } from '@/types/target';
 import { targetApis } from '@/lib/target/targetApis';
+import { addDataDB, clearColumnMapped, clearSelectedRow } from '@/lib/store/reducer/useFile';
+
+import ButtomDrower from '@/components/dashboard/data/ButtomDrower';
+import html2canvas from "html2canvas"
+
+import jsPDF from 'jspdf';
+ 
+import 'jspdf-autotable';  // Import the library
+import MyDocument from './MyDocument';
 
 interface Scopes {
   scope1?: number;
@@ -25,7 +34,7 @@ interface Scopes {
   scope3?: number;
   sum?: number;
 }
-export default function Page(): React.JSX.Element {
+export default function Emissions(): React.JSX.Element {
   const [selectedTab, setSelectedTab] = React.useState<string>('7 Days');
   const dispatch = useDispatch();
   const [myScope, setMyScope] = React.useState<Scopes>({});
@@ -33,6 +42,8 @@ export default function Page(): React.JSX.Element {
   const [dataEmission , setDataEmission] = React.useState([]);
   const [dataEmissionTarget, setDataEmissionTarget] = React.useState([]);
   const [target, setTarget] = React.useState<Target>({});
+
+  const [isOpen, setIsOpen] = React.useState(false);
   const getTargets = React.useCallback(async (): Promise<void> => {
     const { error, res } = await targetApis.getTargets();
     if (error) {
@@ -64,6 +75,99 @@ export default function Page(): React.JSX.Element {
   const handleTabChange = (event: React.ChangeEvent<any>, newValue: string) => {
     setSelectedTab(newValue);
   };
+ 
+  const handleImporter = () => {
+    setIsOpen(!isOpen);
+
+    console.log('handleImporter', isOpen);
+  };
+  const handleExportToPDF = async () => {
+  const doc = new jsPDF();
+  const margin = 10; // Adjust margin for spacing
+
+  const captureWithWhiteBackground = async (element) => {
+    const originalBackground = element.style.backgroundColor;
+    element.style.backgroundColor = '#ffffff'; // Set background to white
+    const canvas = await html2canvas(element, { backgroundColor: '#ffffff' });
+    element.style.backgroundColor = originalBackground; // Restore original background
+    return canvas.toDataURL('image/png');
+  };
+  // If using captured image, add it to the doc:
+  const chartElement = document.getElementById('scopeid');
+  const chartElementMonthlyCarbon = document.getElementById("monthlyCarbonId");
+  const chartElementCarbonEmissionsCategory = document.getElementById("carbonEmissionsCategory");
+
+
+  const imageData = await captureWithWhiteBackground(chartElement);
+  const imageDataMonthly = await captureWithWhiteBackground(chartElementMonthlyCarbon);
+  const imageDataCarbonEmissionCategory = await captureWithWhiteBackground(chartElementCarbonEmissionsCategory);
+ 
+
+  // Calculate image width based on available space
+  const availableWidth = doc.internal.pageSize.getWidth() - 2 * margin;
+  const imageWidth = availableWidth / 2; // Divide available space equally
+
+  // Add first two images on top (side-by-side)
+  doc.addImage(imageData, 'JPG', margin, margin, imageWidth, 0);
+  doc.addImage(imageDataMonthly, 'JPG', margin + imageWidth + margin, margin, imageWidth, 0);
+
+  // Calculate Y position for the third image (below the top two)
+  const topRowHeight = 100; // Assuming all images have similar heights
+  const thirdImageY = margin + topRowHeight + margin; // Add margin for spacing
+
+  // Add the third image in a separate row
+  doc.addImage(imageDataCarbonEmissionCategory,'JPG',margin,thirdImageY, imageWidth+100, 0);
+  doc.text('Emission Tracking', 10, 10); 
+  doc.save('chart_export.pdf');
+};  
+
+  
+
+ /*  const handleExportToPDF = async () => {
+    const doc = new jsPDF();
+  
+    // If using captured image, add it to the doc:
+    const chartElement = document.getElementById('scopeid');
+    const chartElementMonthlyCarbon=document.getElementById("monthlyCarbonId");
+    const canvas = await html2canvas(chartElement);
+    const canvasMonthlyCarbon=await html2canvas(chartElementMonthlyCarbon);
+    const imageData = canvas.toDataURL('image/png');
+    const imageDataMonthly = canvasMonthlyCarbon.toDataURL('image/png');
+
+     doc.addImage(imageData, 'PNG', 10, 10);
+     doc.addImage(imageDataMonthly, 'PNG', 10, 10);
+    // Add chart data directly using jsPDF or jsPDF-AutoTable:
+    const chartData = [ // Your chart data in an array of arrays format
+      ['Label 1', 'Value 1'],
+      ['Label 2', 'Value 2'],
+      // ...
+    ];
+  
+    // With jsPDF:
+    doc.text('Your Chart Title', 10, 10); // Add title if desired
+    doc.autoTable({
+      startY: 20, // Adjust starting Y position
+      head: chartData[0], // Header row
+      body: chartData.slice(1), // Data rows
+      styles: { // Optional styles for the table
+        fontSize: 10,
+        halign: 'center',
+      },
+    });
+  
+    // With jsPDF-AutoTable:
+    // doc.autoTable(chartData); // Simple usage
+  
+    doc.save('chart_export.pdf');
+  }; */
+
+
+
+
+
+
+
+
   return (
     <Box>
       <Grid container justifyContent="space-between" spacing={2}>
@@ -86,6 +190,7 @@ export default function Page(): React.JSX.Element {
                 background: 'var(--Colors-Base-00, #FFF)',
               }}
               startIcon={<ImportIcon />}
+              onClick={handleImporter}
             >
               <Typography variant="h7" sx={{ color: 'var(--Grey-grey-600, #606977)' }}>
                 Import
@@ -101,6 +206,7 @@ export default function Page(): React.JSX.Element {
                 background: 'var(--Green-green-500, #16B364)',
               }}
               startIcon={<ExportIcon fontSize="var(--icon-fontSize-sm)" />}
+              onClick={handleExportToPDF}
             >
               <Typography variant="h7" sx={{ color: 'var(--Colors-Base-00, #FFF)' }}>
                 Export
@@ -154,10 +260,10 @@ export default function Page(): React.JSX.Element {
           <MonthlyCarbonEmissions sx={{ height: '100%' }} dataEmission={dataEmission} dataEmissionTarget={dataEmissionTarget}/>
         </Grid>
         <Grid lg={5} md={12} xs={12}>
-          <Scopes scope1={myScope.scope1} scope2={myScope.scope2} scope3={myScope.scope3} />
+          <Scopes   scope1={myScope.scope1} scope2={myScope.scope2} scope3={myScope.scope3} />
         </Grid>
 
-        <Grid lg={12} md={12} xs={12}>
+        <Grid id="carbonEmissionsCategory" sx={{backgroundColor:"white"}} lg={12} md={12} xs={12}>
           <CarbonEmissionsCategory
             data={dataEmissionByCat}
             sx={{ height: '100%' }}
@@ -167,6 +273,16 @@ export default function Page(): React.JSX.Element {
           />
         </Grid>
       </Grid>
+      {isOpen && (
+        <ButtomDrower
+          open={isOpen}
+          onClose={() => {
+            setIsOpen(!isOpen);
+            dispatch(clearColumnMapped())
+          }}
+          /* onNext={handleNext}  */
+        />
+      )}
     </Box>
   );
 }

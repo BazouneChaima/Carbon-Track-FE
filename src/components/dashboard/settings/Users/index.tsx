@@ -73,6 +73,15 @@ export   function Users() {
   const [isNewUser,setIsNewUser]=useState(false)
   const dispatch=useDispatch();
   const [user, setUser] = useState<User>({});
+   
+  const rowsPerPage = 5;
+  const [pages,setPages]=useState(1);
+  const [page, setPage] = useState(1);
+  const [paginatedUser, setPaginatedUser] = useState<User[]>([]);
+const {roles}=useSelector((state:any)=>state.role)
+  const { users } = useSelector((state: any) => state.user);
+  const dispatch=useDispatch();
+  const [user, setUser] = useState<User>({});
   const page = 0;
   const rowsPerPage = 3;
   const [paginatedUser, setPaginatedUser] = useState<User[]>([]);
@@ -129,18 +138,20 @@ console.log("usersusersusersusers",users)
 
 
 
-
+  const handleChangePage = ( newPage ) => {
+    console.log("handle change page",page)
+    setPage(newPage); 
+  };
 
 
 const getUsers= React.useCallback(async (): Promise<void> => {
   console.log("get users from user")
   try {
     const { res } = await userApis.getUsers();
-    dispatch(setUsers(res));
-    setPaginatedUser(applyPagination(res, page, rowsPerPage));
+    dispatch(setUsers(res)); 
     setUser(res);
-      
-    
+    setPages(Math.ceil(res.length / rowsPerPage))
+    console.log("rrrrrrrrr",res.length,rowsPerPage)
   } catch (error) {
     console.error('Error fetching users:', error); 
   }

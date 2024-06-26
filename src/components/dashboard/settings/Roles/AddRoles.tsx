@@ -19,7 +19,7 @@ import { roleApis } from '@/lib/role/roleApis';
 import  { SelectChangeEvent } from '@mui/material/Select';
 import { body, FooterBody, FooterBox, header, HeaderBody } from '@/styles/theme/Bottom-drawer';
 import {Role} from '@/types/role'; 
-
+import { setOpenToast } from '@/lib/store/reducer/useGlobalActions';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -80,9 +80,10 @@ const NewRole: React.FC<NewRoleProps> = ({ open,handleCancelRole, users,newRole,
    
     const { res , error } = await roleApis.createRole(newRole);
     if (error) { 
+      dispatch(setOpenToast({ message: error, type: 'error' }));
      return
    } 
-  
+   dispatch(setOpenToast({ message: 'Role Added Successfully', type: 'success' }));
     console.log('updated newRole with permissions:', newRole);
     handleCancelRole();
   };

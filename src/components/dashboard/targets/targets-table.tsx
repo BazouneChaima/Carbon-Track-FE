@@ -3,7 +3,6 @@
 import React, { useMemo, useState } from 'react';
 import { redirect, useRouter } from 'next/navigation';
 
-import { Pagination } from '@/components/commun/Pagination/Pagination';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -18,6 +17,7 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
 import { useDispatch } from 'react-redux';
+import { Pagination } from '@/components/commun/Pagination/Pagination';
 import usePagination from '@/hooks/use-pagination';
 import { Target } from '@/types/target';
 import { setTarget } from '@/lib/store/reducer/useTarget';
@@ -44,11 +44,12 @@ export interface Customer {
 interface TargetsTableProps {
   count?: number;
   page?: number;
+  pages:number,
   rows?: Target[];
   rowsPerPage?: number;
   onFilterBySearch:any;
   onFilterByDate:any;
-  pages:number,
+  
   handleChangePage:any;
   
 }
@@ -170,9 +171,11 @@ console.log("pagineted and rows target",rows,paginatedRows,pages)
 
                     <TableCell>{row.emissionReduction}</TableCell>
                     <TableCell>{row.baseYear }-{row.targetYear}</TableCell>
+                    <TableCell>
                     <Box style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '2rem' }}>
                       <DropdownTableCell  target={row} />
                     </Box>
+                    </TableCell>
                   </TableRow>
                 );
               })}
