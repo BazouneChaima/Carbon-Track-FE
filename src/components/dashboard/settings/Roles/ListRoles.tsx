@@ -24,7 +24,7 @@ import DeleteConfirmation from '@/components/commun/Alerts/DeleteConfirmation';
 import { MuiButton } from '@/styles/theme/components/button';
 import { boxFilterDropDown, Filter, outlinedInput } from '@/styles/theme/Filter';
 import {CheckIcon,GreneIcon} from '@/icons';
-import UpdateRoles from './UpdateRoles';
+ 
 
  import { useDispatch, useSelector } from 'react-redux';
  import { userApis } from '@/lib/user/userApis';
@@ -36,6 +36,7 @@ import { setRoles } from '@/lib/store/reducer/useRole';
 import { roleApis } from '@/lib/role/roleApis';
 
 import RoleDrawer from './RoleDrawer';
+import { setOpenToast } from '@/lib/store/reducer/useGlobalActions';
 interface ListRolesProps {
 roles:any;
 roleToDelete:Role;
@@ -88,8 +89,10 @@ const handleDelete= (role:Role) => {
 
     const { error } = await roleApis.deleteRole(roleToDelete._id,user);
     if (error) {
+      dispatch(setOpenToast({ message: error, type: 'error' }));
       return;
     }
+    dispatch(setOpenToast({ message: 'Data Added Successfully', type: 'success' }));
     const newRoles = roles.filter((role) => role._id !== roleToDelete._id);
 
      dispatch(setRoles(newRoles));
@@ -212,20 +215,7 @@ primaryTypographyProps={{ variant: 'bodyP3', color: 'var(--Green-green-500, #727
           </Paper>
         </Grid>
       ))}
-    {/*       {open && newRole && (
-        <UpdateRoles
-          open={open}
-          handleCancelRole={handleCancelRole}
-          onUpdateRole={onUpdateRole}
-          users={users}
-          newRole={newRole}
-        
-         
-        />
-
-
-        
-      )} */}
+   
 
  {open  && (
 <RoleDrawer

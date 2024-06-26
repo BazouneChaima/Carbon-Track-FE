@@ -290,42 +290,12 @@ const updateSearch=(search:string)=>{
                   <TableCell>{row.status}</TableCell>
                   <TableCell>
                   <Box display="flex" justifyContent="center" alignItems="center">
-    <IconButton onClick={(event) => handleMenuOpen(event, row.id)}>
-      <DotsHorizontal />
-    </IconButton>
-    <Menu
-      anchorEl={anchorEl}
-      open={Boolean(anchorEl) && selectedTaskId === row.id}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={(event) => handleModify(event, row)}>
-        <ModifyIcon fontSize="small" />
-        Modify
-      </MenuItem>
-      <MenuItem onClick={(event) => handleAssign(event, row)}>
-        <AssignIcon fontSize="small" />
-        Assign
-      </MenuItem>
-      <MenuItem onClick={()=>handleDelete(row)}>
-        <DeleteIcon fontSize="small" />
-        Delete
-      </MenuItem>
-      {isDeleteOpen && selectedRow && (
-        <DeleteConfirmation
-          open={isDeleteOpen}
-          setOpen={setIsDeleteOpen}
-          title="Do you want to delete this?"
-          subtitle="Are you sure you want to delete this file."
-          primary="Delete"
-          secondary="Cancel"
-          handleDelete={handleDeleteTask} 
-          primaryColor={{ backgroundColor: palette.danger[500] }}
-        />)}
-    </Menu>
-
-  
-  </Box>
-  </TableCell>
+                    <IconButton onClick={(event) => handleMenuOpen(event, row.id)}>
+                    <DropdownTableCell  task={row} />
+                    </IconButton>
+                    
+                  </Box>
+                   </TableCell>
                 </TableRow>
               );
             })}

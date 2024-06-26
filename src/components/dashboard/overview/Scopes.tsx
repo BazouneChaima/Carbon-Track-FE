@@ -30,11 +30,12 @@ export default function Scopes({ scope1, scope2, scope3 }: ScopesProps) {
   }));
   const colors = ['#73E2A3', '#FF8F6B', '#FFD66B'];
   return (
-    <Card sx={{ height: '100%' }}>
+    <Card id="scopeid" sx={{ height: '100%',backgroundColor:"transparent" }}>
       <CardHeader title="Scopes" />
       <CardContent>
         <PieChart
           colors={colors}
+
           series={[
             {
               data,

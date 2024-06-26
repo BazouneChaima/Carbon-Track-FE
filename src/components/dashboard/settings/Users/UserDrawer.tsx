@@ -22,6 +22,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setUsers } from '@/lib/store/reducer/useUser';
 import { body, FooterBody, FooterBox, header } from '@/styles/theme/Bottom-drawer';
 import { User } from '@/types/user';
+import { EnvelopeIcon, LineIcon, LocKeyIcon } from '@/icons';
+import {   InputAdornment } from '@mui/material';
+
+import { EyeSlash as EyeSlashIcon } from '@phosphor-icons/react/dist/ssr/EyeSlash';
+import { Eye as EyeIcon } from '@phosphor-icons/react/dist/ssr/Eye';
+import { setOpenToast } from '@/lib/store/reducer/useGlobalActions';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -37,17 +43,17 @@ const MenuProps = {
 interface UserDrawerProps {
   open: boolean;
   handleCancelUser: () => void;
-  users: any;
+  
   roles:any;
-  user: User | null;
+   
   headerName: string;
   isUpdate: boolean;
-  setNewUser:any; 
+   
   userUpdate:User | null;
 }
 
 const UserDrawer: React.FC<UserDrawerProps> = ({ open, handleCancelUser, userUpdate, roles, headerName, isUpdate }) => {
-
+console.log("user rollles",roles)
   const [permissions, setPermissions] = useState({
     read_user_management: false,
     write_user_management: false,
@@ -66,40 +72,45 @@ const UserDrawer: React.FC<UserDrawerProps> = ({ open, handleCancelUser, userUpd
     create_reports: false,
   });
  
-  const [currentUser, setCurrentUser] = useState<User>(userUpdate || { username: '',email:''  });
+  const [currentUser, setCurrentUser] = useState<User>(userUpdate || { username: '',email:'',password:''  });
   const dispatch = useDispatch(); 
   const {user}=useSelector((state:any)=>state.user)
 
+  const [showPassword, setShowPassword] = React.useState<boolean>();
   console.log("user draweer",user.id)
   const handleSaveUser = async () => {
     
-
-    const newUserData = {
-     
-      // Exclude password property using destructuring assignment with rest syntax
-      ...(Object.fromEntries(Object.entries(currentUser).filter(([key]) => key !== 'password'))),
-    };
-    
-
-    setCurrentUser(newUserData);
+      console.log("setuccc",currentUser)
+  
 
     if (isUpdate) {
+      const newUserData = {
+     
+        // Exclude password property using destructuring assignment with rest syntax
+        ...(Object.fromEntries(Object.entries(currentUser).filter(([key]) => key !== 'password'))),
+      };
+      
+  
+      setCurrentUser(newUserData);
       console.log("is update",Object.keys(newUserData))
       
       console.log("newUserData",newUserData,currentUser)
       const { error } = await userApis.updateUser(newUserData);
       if (error) {
-        console.log("Update error:", error);
+        dispatch(setOpenToast({ message: error, type: 'error' }));
         return;
       }
+      dispatch(setOpenToast({ message: 'User Updated Successfully', type: 'success' }));
       const updatedUsers = roles.map((r) => (r._id === newUserData._id ? newUserData : r));
       dispatch(setUsers(updatedUsers));
     } else {
-      const { res, error } = await userApis.createUser(newUserData);
+
+      const { res, error } = await userApis.createUser(currentUser);
       if (error) {
-        console.log("Create error:", error);
+        dispatch(setOpenToast({ message: error, type: 'error' }));
         return;
       }
+      dispatch(setOpenToast({ message: 'User Added Successfully', type: 'success' }));
       dispatch(setUsers([...roles, res]));
     }
 
@@ -115,6 +126,7 @@ const UserDrawer: React.FC<UserDrawerProps> = ({ open, handleCancelUser, userUpd
   
 
   const handleChange = (name: string, value: any) => {
+    console.log("handle change",name,value)
     setCurrentUser((prevUser) => ({
       ...prevUser,
       [name]: value,
@@ -123,132 +135,144 @@ const UserDrawer: React.FC<UserDrawerProps> = ({ open, handleCancelUser, userUpd
 
   return (
     <form onSubmit={handleSaveUser}>
-      <Drawer anchor="bottom" open={open} onClose={handleCancelUser}>
-        <Slide direction="up" in={open} mountOnEnter unmountOnExit>
-          <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={header}>
-              <Typography
-                variant="h4"
-                sx={{
-                  color: 'var(--Foundation-Grey-grey-700, #121417)',
-                  fontFeatureSettings: '"cv04" on, "cv03" on, "cv02" on, "cv11" on, "clig" off, "liga" off',
-                }}
-              >
-                {headerName}
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="help">need help?</Typography>
-                <IconButton onClick={handleCancelUser} sx={{ marginLeft: 8 }}>
-                  <CloseIcon />
-                </IconButton>
-              </Box>
+    
+  
+    <Drawer anchor="bottom" open={open} onClose={handleCancelUser}>
+      <Slide direction="up" in={open} mountOnEnter unmountOnExit>
+        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={header}>
+            <Typography
+              variant="h4"
+              sx={{
+                color: 'var(--Foundation-Grey-grey-700, #121417)',
+                fontFeatureSettings: '"cv04" on, "cv03" on, "cv02" on, "cv11" on, "clig" off, "liga" off',
+              }}
+            >
+              {' '}
+              Add User{' '}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="help">need help?</Typography>
+              <IconButton onClick={handleCancelUser} sx={{ marginLeft: 8 }}>
+                <CloseIcon />
+              </IconButton>
             </Box>
-            <Box sx={body}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  gap: '0.5rem',
-                  alignSelf: 'stretch',
-                }}
-              >
-                <Typography variant="subtitle3">User Name *</Typography>
-                <TextField
-                  label="User Name *"
-                  value={currentUser.username}
-                  onChange={(e) => handleChange('username', e.target.value)}
-                  margin="normal"
-                  fullWidth
-                />
-              </Box>
-
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  gap: '0.5rem',
-                  alignSelf: 'stretch',
-                }}
-              >
-                <Typography variant="subtitle3">User Email *</Typography>
-                <TextField
-                  label="User Name *"
-                  value={currentUser.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                  margin="normal"
-                  fullWidth
-                />
-              </Box>
-
-
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  gap: '0.5rem',
-                  alignSelf: 'stretch',
-                }}
-              >
-                {isUpdate ? (
-                      <></>
-                ):(
-                  <>
-                <Typography variant="subtitle3">User Password *</Typography>
-                <TextField
-                  label="User Name *"
-                  value={currentUser.password}
-                  onChange={(e) => handleChange('password', e.target.value)}
-                  margin="normal"
-                  fullWidth
-                />
-               </>
+          </Box>
+          <Box sx={body}>
                
-               )}
-              </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: '0.5rem',
+                alignSelf: 'stretch',
+              }}
+            >
+              <Typography variant="h5" sx={{color:'var(--Grey-grey-900, #1A1D21)'}}>{headerName}</Typography> 
+              
+            </Box>
+ 
 
 
+<Grid container spacing={2} display="flex" flexDirection="row">
+      {/* Grid items */}
 
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  gap: '0.5rem',
-                  alignSelf: 'stretch',
-                }}
-              >
+      <Grid item xs={12} >
+      <Grid container spacing={2} alignItems="center">
+           
+         
+      <Typography variant='subtitle3'>User Name *</Typography>
+      <TextField
+            
+            value={currentUser.username}
+            onChange={(e) => handleChange('username', e.target.value)}
+            margin="normal"
+            fullWidth
+          />
+      
+        </Grid>
+        </Grid>
+        
+  <Divider style={{ margin: "1rem 0", backgroundColor: "red" ,strokeWidt:"1px"}} />
+      {/* Repeat the same structure for other grid items */}
+      <Grid item xs={12}  >
+      <Grid container spacing={2} alignItems="center">
+          
+      <Typography variant='subtitle3'>User Email * </Typography>
+       <TextField
+           
+            value={currentUser.email}
+            onChange={(e) => handleChange('email', e.target.value)}
+            margin="normal"
+            fullWidth
+          />
+      
+      </Grid>
 
-            <Typography variant="subtitle3">Phone</Typography>
-                <TextField
-                  label="User Name *"
+      </Grid>
+      <Grid item xs={12}  >
+      <Grid container spacing={2} alignItems="center">
+         
+              
+      <Typography variant='subtitle3'>User Password *</Typography>
+       
+          <FormControl fullWidth margin='normal'>
+                <OutlinedInput
+                
+                     
+                value={currentUser.password}
+                onChange={(e) => handleChange('password', e.target.value)}
+                  endAdornment={
+                    showPassword ? (
+                      <EyeIcon
+                        cursor="pointer"
+                        fontSize="var(--icon-fontSize-md)"
+                        onClick={(): void => {
+                          setShowPassword(false);
+                        }}
+                      />
+                    ) : (
+                      <EyeSlashIcon
+                        cursor="pointer"
+                        fontSize="var(--icon-fontSize-md)"
+                        onClick={(): void => {
+                          setShowPassword(true);
+                        }}
+                      />
+                    )
+                  }
+                  placeholder="Password"
+                  type={showPassword ? 'text' : 'password'}
+                />
+               </FormControl>
+
+          </Grid>
+      </Grid>
+      
+      <Grid item xs={12}  >
+      <Grid container spacing={2} alignItems="center">
+            
+      <Typography variant='subtitle3'>Phone</Typography>
+      <TextField
+                  
                   value={currentUser.phone}
                   onChange={(e) => handleChange('phone', e.target.value)}
                   margin="normal"
                   fullWidth
                 />
-              </Box>
 
 
+        
+         </Grid>
+      </Grid>
 
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  gap: '0.5rem',
-                  alignSelf: 'stretch',
-                }}
-              >
 
-{isUpdate ? (
-                      <></>
-                ):(
-                  <>
-                <Typography variant="subtitle3">Role</Typography>
-                <FormControl fullWidth>
+      <Grid item xs={12}  >
+      <Grid container spacing={2} alignItems="center">
+            
+      <Typography variant='subtitle3'>Role</Typography>
+      <FormControl fullWidth>
                 <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
@@ -269,16 +293,16 @@ const UserDrawer: React.FC<UserDrawerProps> = ({ open, handleCancelUser, userUpd
                     )}
                   </Select>
                 </FormControl>
-</>
-                )}
-              </Box>
 
-            
 
-    
+        
+         </Grid>
+      </Grid>
+ 
+</Grid>
 
           </Box>
-          <Divider sx={{ mt: 2 }} />
+          <Divider sx={{ mt: 2,color:"black" }} />
           <Grid sx={FooterBox}>
             <Grid sx={FooterBody}>
               <Button
@@ -306,9 +330,13 @@ const UserDrawer: React.FC<UserDrawerProps> = ({ open, handleCancelUser, userUpd
                   background: 'var(--Green-green-500, #16B364)',
                 }}
               >
-                <Typography variant="subtitle3" sx={{ color: 'var(--Colors-Base-00, #FFF)' }}>
+              
+
+              <Typography variant="subtitle3" sx={{ color: 'var(--Colors-Base-00, #FFF)' }}>
                   Confirm
                 </Typography>
+
+
               </Button>
             </Grid>
           </Grid> 

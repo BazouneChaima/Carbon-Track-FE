@@ -44,6 +44,39 @@ export default function Page(): React.JSX.Element {
   const handleTabChange = (event: React.ChangeEvent<any>, newValue: string) => {
     setSelectedTab(newValue);
   };
+  function downloadCSV(data, filename = 'data.csv') {
+    const csv = convertToCSV(data);
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', filename);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+  const handleExportClick = () => {
+    downloadCSV(reports, 'reports.csv');
+  };
+  function convertToCSV(data) {
+    const csvRows = [];
+    
+    // Get headers
+    const headers = Object.keys(data[0]);
+    csvRows.push(headers.join(','));
+  
+    // Loop through rows
+    for (const row of data) {
+      const values = headers.map(header => {
+        const escaped = ('' + row[header]).replace(/"/g, '\\"'); // Escape double quotes
+        return `"${escaped}"`;
+      });
+      csvRows.push(values.join(','));
+    }
+  
+    return csvRows.join('\n');
+  }
   return (
     <Box  >
     <Grid container justifyContent="space-between" spacing={2}>
@@ -68,7 +101,8 @@ export default function Page(): React.JSX.Element {
               borderRadius: "6px",
               background: "var(--Green-green-500, #16B364)",
             }}
-            startIcon={<ExportIcon fontSize="var(--icon-fontSize-sm)"  color="white"/>}  
+            startIcon={<ExportIcon fontSize="var(--icon-fontSize-sm)"  color="white"/>}
+            onClick={handleExportClick}  
           >
             <Typography variant="h7" sx={{ color: "var(--Colors-Base-00, #FFF)" }}>
               Export

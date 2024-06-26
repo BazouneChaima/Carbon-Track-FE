@@ -33,9 +33,10 @@ const [searchDate,setSearchDate]=useState('')
   const rowsPerPage = 8;
   
   const [pages,setPages]=useState(1);
+  const [page, setPage] = useState(1);
   const dispatch = useDispatch();
   const [rows, setRows] = useState([{}]);
-  const [page, setPage] = useState(1); // Start on page 1
+   
 
   const [totalRows,setTotalRows]=useState(1);
   const handleTabChange = (event: React.ChangeEvent<any>, newValue: string) => {

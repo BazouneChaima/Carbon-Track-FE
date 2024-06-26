@@ -32,7 +32,8 @@ import { Task } from '@/types/task';
 import { User } from '@/types/user';
 import { body, FooterBody, FooterBox, header, HeaderBody } from '@/styles/theme/Bottom-drawer';
 import { boxFilterDropDown, Filter, filterCalander, outlinedInput } from '@/styles/theme/Filter';
-
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import { DemoItem } from '@mui/x-date-pickers/internals/demo';
 interface UpdateBottomDrawerTaskProps {
   open: boolean;
   isAssign: boolean;
@@ -58,8 +59,7 @@ const UpdateBottomDrawerTask: React.FC<UpdateBottomDrawerTaskProps> = ({
   headerName,
   titleName,
   subtitleName,
-}) => {
-  console.log('selectedTask====>', task.targetName, targets, users);
+}) => { 
   const [updatedTask, setupdatedTask] = useState<Task>(task);
   const [initialTarget, setInitialTarget] = useState<Target>({});
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -222,8 +222,7 @@ const UpdateBottomDrawerTask: React.FC<UpdateBottomDrawerTaskProps> = ({
                               {value.name}
                             </MenuItem>
                           ))
-                        ) : (
-                          // Display a message while users are loading or unavailable
+                        ) : ( 
                           <Typography variant="body2" sx={{ color: 'var(--Grey-grey-600, #606977)' }}>
                             {targets === undefined ? 'Loading targets...' : 'No targets available'}
                           </Typography>
@@ -235,9 +234,8 @@ const UpdateBottomDrawerTask: React.FC<UpdateBottomDrawerTaskProps> = ({
                 <Grid item xs={12}>
                   <Grid container spacing={2} alignItems="center">
                     <Typography variant="subtitle3">Due Date</Typography>
-                    <FormControl variant="outlined" fullWidth onClick={toggleCalendar}>
-                      <OutlinedInput
-                        /* value={newTask.dueDate} isCalendarOpen */
+                    <FormControl variant="outlined" fullWidth  >
+                  {/*     <OutlinedInput 
                         value={!selectedDate ? task?.dueDate : dayjs(selectedDate).format('YYYY-MM-DD')} // Display date if open, else empty string
                         placeholder="Due Date"
                         endAdornment={<CalanderIcon cursor="pointer" fontSize="var(--icon-fontSize-md)" />}
@@ -252,7 +250,13 @@ const UpdateBottomDrawerTask: React.FC<UpdateBottomDrawerTaskProps> = ({
                             />
                           </LocalizationProvider>
                         </Box>
-                      )}
+                      )} */}
+                         <DemoItem  >
+                <MobileDatePicker
+          //defaultValue={task?.dueDate }
+                  onChange={handleDateChange}
+                />
+              </DemoItem>
                     </FormControl>
                   </Grid>
                 </Grid>

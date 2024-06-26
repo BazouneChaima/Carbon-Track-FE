@@ -21,6 +21,9 @@ import { palette } from '@/styles/theme/colors';
 import { MuiButton } from '@/styles/theme/components/button';
 import { boxFilterDropDown, Filter, outlinedInput,filterCalander } from '@/styles/theme/Filter';
 import dayjs from 'dayjs';
+import { MobileDatePicker } from '@mui/x-date-pickers';
+import { DemoItem } from '@mui/x-date-pickers/internals/demo';
+
 
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -242,10 +245,9 @@ const BottomDrawer: React.FC<BottomDrawerProps> = ({open,handleCancelTask, onCre
   )}
 </Box> */}
 
-<FormControl variant="outlined" fullWidth onClick={toggleCalendar}>
-  <OutlinedInput
-    /* value={newTask.dueDate} */
-    value={isCalendarOpen ? '' : dayjs(selectedDate).format('YYYY-MM-DD')} // Display date if open, else empty string
+{/* <FormControl variant="outlined" fullWidth onClick={toggleCalendar}>
+  <OutlinedInput 
+    value={isCalendarOpen ? '' : dayjs(selectedDate).format('YYYY-MM-DD')}  
     placeholder="Due Date"
     endAdornment={<CalanderIcon cursor="pointer" fontSize="var(--icon-fontSize-md)" />}
   />
@@ -260,10 +262,16 @@ const BottomDrawer: React.FC<BottomDrawerProps> = ({open,handleCancelTask, onCre
       </LocalizationProvider>
     </Box>
   )}
-</FormControl>
+</FormControl> */}
+<FormControl variant="outlined" fullWidth onClick={toggleCalendar}>
+    <DemoItem  >
+                <MobileDatePicker
+                  defaultValue={selectedDate}
+                  onChange={handleDateChange}
+                />
+              </DemoItem>
 
-
-
+              </FormControl>
 
           </Grid>
       </Grid>
