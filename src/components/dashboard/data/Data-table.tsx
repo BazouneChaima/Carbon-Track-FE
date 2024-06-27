@@ -32,6 +32,7 @@ import { palette } from '@/styles/theme/colors';
 
 import FilterColumns from '../../commun/Filters/FilterColumns';
 import CreateUpdateButtomDrower from './CreateUpdateButtomDrower';
+import zIndex from '@mui/material/styles/zIndex';
 
 export interface Reports {
   id: string;
@@ -55,6 +56,7 @@ interface DataTableProps {
   onFilterByDate:any;
   pages:number,
   handleChangePage:any;
+  onFilterByFiltering:any;
 }
  
 
@@ -66,12 +68,27 @@ export function DataTable({
   handleUpdate,
   onFilterBySearch,
   onFilterByDate,
+  onFilterByFiltering,
   pages,
   handleChangePage,
 }: DataTableProps): React.JSX.Element {
   const rowIds = React.useMemo(() => {
     return rows.map((Reports) => Reports.id);
   }, [rows]);
+  const columns: Column[] = [
+    { field: 'location', headerName: 'location', width: 150, filterable: true, type: 'string' },
+    { field: 'category', headerName: 'category', width: 110, filterable: true, type: 'string' },
+    {field:"quantity", headerName:"quantity", width: 160, filterable: true, type: 'number'},
+    {field:"emission_tracker", headerName:"Emission Factor", width: 160, filterable: true, type: 'number'},
+    {field:"source", headerName:"source", width: 160, filterable: true, type: 'string'},
+ 
+  ];
+ 
+  const updateFiltering=(selectedValue:string,operator:string,value:string)=>{
+    console.log("update filtering from data table",selectedValue,operator,value);
+    onFilterByFiltering(selectedValue,operator,value);
+  }
+
   const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
   const dispatch = useDispatch();
   const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < rows.length;
@@ -126,18 +143,14 @@ export function DataTable({
  
   return (
     <Card>
-      <Divider />
+           <FilterColumns   columns={columns} onFilterByFiltering={updateFiltering} 
+  onFilterByDate={onFilterByDate} onFilterBySearch={updateSearch} isYear={false} 
+  isDate={false} isFullDate={true}/>
+ <Divider />
+     
       <Box sx={{ overflowX: 'auto' }}>
         <Table sx={{ minWidth: '800px' }}>
-          <TableHead>
-            <TableRow>
-              <TableCell colSpan={12}>
-                <Card variant="outlined" sx={{ border: '0' }}>
-                  <CardHeader title={<FilterColumns  onFilterByDate={onFilterByDate} onFilterBySearch={updateSearch} isYear={false} isDate={false} isFullDate={true}/>} />
-                </Card>
-              </TableCell>
-            </TableRow>
-            <TableRow>
+   
               <TableCell padding="checkbox">
                 <Checkbox
                   checked={selectedAll}
@@ -159,8 +172,7 @@ export function DataTable({
               {!importFunc && <TableCell>Source Type</TableCell>}
               {!importFunc && <TableCell>Integration Source</TableCell>}
               <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
+          
           <TableBody>
             {paginatedRows &&
               paginatedRows.map((row) => {

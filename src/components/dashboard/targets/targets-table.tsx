@@ -49,7 +49,7 @@ interface TargetsTableProps {
   rowsPerPage?: number;
   onFilterBySearch:any;
   onFilterByDate:any;
-  
+  onFilterByFiltering:any;
   handleChangePage:any;
   
 }
@@ -59,10 +59,16 @@ export function TargetsTable({
   rowsPerPage = 5,
   
   onFilterBySearch,
+  onFilterByFiltering,
   onFilterByDate,
   pages,
   handleChangePage,
  }: TargetsTableProps): React.JSX.Element {
+  const columns: Column[] = [
+    { field: 'name', headerName: 'Target', width: 150, filterable: true, type: 'string' },
+    { field: 'type', headerName: 'Type', width: 110, filterable: true, type: 'string' },
+    {field:"emissionReduction", headerName:"Emission Reduction", width: 160, filterable: true, type: 'number'},
+  ];
   const rowIds = React.useMemo(() => {
     return Array.isArray(rows) && rows?.map((customer) => customer.id);
   }, [rows]);
@@ -102,11 +108,15 @@ console.log("pagineted and rows target",rows,paginatedRows,pages)
     dispatch(setTarget(data));
     router.push('/dashboard/target/details');
   };
- 
+  const updateFiltering=(selectedValue:string,operator:string,value:string)=>{
+    console.log("update filtering from task table",selectedValue,operator,value);
+    onFilterByFiltering(selectedValue,operator,value);
+  }
+  
 
   return (
     <Card>
-      <FilterColumns onFilterByDate={onFilterByDate} onFilterBySearch={updateSearch} isYear={true} isDate={false} isFullDate={false}/>
+      <FilterColumns columns={columns} onFilterByFiltering={updateFiltering} onFilterByDate={onFilterByDate} onFilterBySearch={updateSearch} isYear={true} isDate={false} isFullDate={false}/>
       <Divider />
       <Box sx={{ overflowX: 'auto' }}>
         <Table sx={{ minWidth: '800px' }}>

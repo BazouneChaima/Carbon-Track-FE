@@ -38,6 +38,7 @@ interface TasksTableProps {
     rows?: Task[];
     rowsPerPage?: number;
     onFilterBySearch:any;
+    onFilterByFiltering:any;
     onFilterByDate:any;
     pages:number,
     handleChangePage:any;
@@ -49,9 +50,10 @@ export function TasksTable({
   rowsPerPage = 5,
   
   onFilterBySearch,
+  onFilterByFiltering,
   onFilterByDate,
   pages,
-  handleChangePage,selectedTab="My Tasks"
+  handleChangePage,selectedTab
 }: TasksTableProps): React.JSX.Element {
   const dispatch = useDispatch();
 
@@ -69,15 +71,28 @@ export function TasksTable({
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const { dataDB } = useSelector((state: any) => state.file);
   const paginatedRows = usePagination({ rows, page, pageSize: rowsPerPage });
-
+  console.log("rowsPerPage",paginatedRows,rows.length,page)
+  const columns: Column[] = [
+    { field: 'taskName', headerName: 'tasks', width: 150, filterable: true, type: 'string' },
+    { field: 'dueDate', headerName: 'Due Date', width: 110, filterable: true, type: 'Date' },
+    { field: 'status', headerName: 'status', width: 160, filterable: true, type: 'string' },
+    {field:"progress", headerName:"progress", width: 160, filterable: true, type: 'number'},
+    { field: 'targetName', headerName: 'Target Name', width: 150, filterable: true, type: 'string' },
+  
+  ];
 
 
   const updateSearch=(search:string)=>{
     console.log("search Data table",search)
     onFilterBySearch(search);
   }
+const updateFiltering=(selectedValue:string,operator:string,value:string)=>{
+  console.log("update filtering from task table",selectedValue,operator,value);
+  onFilterByFiltering(selectedValue,operator,value);
+}
+
   const updateChangePage = (event: any, newPage: any) => {
-    console.log("update change data",newPage)
+    console.log("update change data===>",newPage)
     setPage(newPage);
     handleChangePage(newPage);
   };
@@ -224,7 +239,7 @@ export function TasksTable({
 
   return (
     <Card>
-       <FilterColumns onFilterByDate={onFilterByDate} onFilterBySearch={updateSearch} isYear={false} isDate={true} isFullDate={false}/>
+       <FilterColumns columns={columns} onFilterByFiltering={updateFiltering} onFilterByDate={onFilterByDate} onFilterBySearch={updateSearch} isYear={false} isDate={true} isFullDate={false}/>
      
  
       <Divider />
@@ -243,7 +258,7 @@ export function TasksTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows && rows.map((row) => (
+            {paginatedRows && paginatedRows.map((row) => (
               <TableRow hover key={row.id}>
                 <TableCell padding="checkbox"></TableCell>
                 <TableCell>
@@ -292,6 +307,16 @@ export function TasksTable({
                 </TableCell>
               </TableRow>
             ))}
+             {!paginatedRows ||
+              (paginatedRows.length == 0 && (
+                <TableRow>
+                  <TableCell colSpan={10} padding="checkbox">
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginY: '2rem' }}>
+                      <img src={'/assets/empty.png'} width={200} height={200} alt="My Image" />
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </Box>

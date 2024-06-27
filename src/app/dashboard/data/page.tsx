@@ -39,6 +39,9 @@ export default function Page(): React.JSX.Element {
 
   const [startFullDate, setStartFullDate] = useState<Date | ''>('');
   const [endFullDate, setEndFullDate] = useState<Date | ''>('');
+  const [column,setColumn]=useState('');
+const [operator,setOperator]=useState('');
+const [value,setValue]=useState('');
   const handleModify = () => {};
 
   const handleImporter = () => {
@@ -51,6 +54,15 @@ export default function Page(): React.JSX.Element {
     setPage(newPage); 
   };
 
+  const onFilterByFiltering=(selectedValue,operator,value)=>{
+    console.log("searching equal page task==>",selectedValue,operator,value)
+    setColumn(selectedValue);
+      setOperator(operator);
+      setValue(value)
+    
+  
+  }
+
   const getData = React.useCallback(async (): Promise<void> => {
     console.log("searchInput",searchInput)
     const filters = {
@@ -59,6 +71,10 @@ export default function Page(): React.JSX.Element {
       page,  
       limit: rowsPerPage,  
       search:searchInput,
+      column:column,
+      operator:operator,
+      value:value,
+
     };
     console.log("filters data",filters)
     const { error, res,total,totalPages } = await dataApis.getData(filters);
@@ -70,7 +86,7 @@ export default function Page(): React.JSX.Element {
     setTotalRows(total);
     setPages(totalPages);
     setRows(res); 
-  }, [dispatch, page, rowsPerPage,pages,totalRows, searchInput,endFullDate,startFullDate]);
+  }, [dispatch, page, rowsPerPage,pages,totalRows, searchInput,endFullDate,startFullDate,,column,operator,value]);
 
   useEffect(() => {
     getData();
@@ -189,7 +205,7 @@ export default function Page(): React.JSX.Element {
         </Grid>
       </Grid>
 
-      <DataTable handleDelete={handleDelete} handleUpdate={handleUpdate} page={page} rows={rows} rowsPerPage={rowsPerPage}
+      <DataTable handleDelete={handleDelete} onFilterByFiltering={onFilterByFiltering} handleUpdate={handleUpdate} page={page} rows={rows} rowsPerPage={rowsPerPage}
       
       onFilterBySearch={onFilterBySearch} onFilterByDate={onFilterByDate} pages={pages} handleChangePage={handleChangePage}
       />

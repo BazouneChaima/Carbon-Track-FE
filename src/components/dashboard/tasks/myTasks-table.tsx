@@ -41,6 +41,7 @@ interface TaskMeTableProps {
   onFilterByDate:any;
   pages:number,
   handleChangePage:any;
+  onFilterByFiltering:any;
   
 }
 
@@ -49,11 +50,17 @@ export function MyTasksTable({
   rowsPerPage = 5,
   
   onFilterBySearch,
+  onFilterByFiltering,
   onFilterByDate,
   pages,
   handleChangePage,selectedTab="My Tasks"
 }: TaskMeTableProps): React.JSX.Element {
-  
+  const columns: Column[] = [
+    { field: 'taskName', headerName: 'tasks', width: 150, filterable: true, type: 'string' },
+    { field: 'dueDate', headerName: 'Due Date', width: 110, filterable: true, type: 'Date' },
+    {field:"progress", headerName:"progress", width: 160, filterable: true, type: 'number'},
+    { field: 'status', headerName: 'status', width: 150, filterable: true, type: 'string' },
+  ];
  
   
   const { targets } = useSelector((state: any) => state.target);
@@ -87,6 +94,11 @@ const updateSearch=(search:string)=>{
   console.log("search Data table",search)
   onFilterBySearch(search);
 }
+const updateFiltering=(selectedValue:string,operator:string,value:string)=>{
+  console.log("update filtering from task table",selectedValue,operator,value);
+  onFilterByFiltering(selectedValue,operator,value);
+}
+
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, taskId: string) => {
     setAnchorEl(event.currentTarget);
     setSelectedTaskId(taskId);
@@ -211,7 +223,7 @@ const updateSearch=(search:string)=>{
     <Card>
      {/*  <FilterColumns onFilterByDate={onFilterByDate}/> */}
     
-     <FilterColumns onFilterByDate={onFilterByDate} onFilterBySearch={updateSearch} isYear={false} isDate={true} isFullDate={false}/>
+     <FilterColumns columns={columns} onFilterByFiltering={updateFiltering} onFilterByDate={onFilterByDate} onFilterBySearch={updateSearch} isYear={false} isDate={true} isFullDate={false}/>
       
 
       <Divider />

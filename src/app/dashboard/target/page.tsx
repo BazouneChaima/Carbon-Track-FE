@@ -49,6 +49,9 @@ const [searchBaseYear,setSearchBaseYear]=useState('');
 
 const [searchTargetYear,setSearchTargetYear]=useState('');
 const { user } = useSelector((state: any) => state.user);
+const [column,setColumn]=useState('');
+const [operator,setOperator]=useState('');
+const [value,setValue]=useState('');
   const handleChangePage = ( newPage ) => {
     console.log("handle change page",page)
     setPage(newPage); 
@@ -60,7 +63,14 @@ const { user } = useSelector((state: any) => state.user);
     setIsNewTask(false);
   };
 
+  const onFilterByFiltering=(selectedValue,operator,value)=>{
+    console.log("searching equal page task==>",selectedValue,operator,value)
+    setColumn(selectedValue);
+      setOperator(operator);
+      setValue(value)
+    
   
+  }
 
 
 
@@ -73,6 +83,9 @@ const { user } = useSelector((state: any) => state.user);
        page,  
        limit: rowsPerPage,  
        search:searchInput,
+       column:column,
+        operator:operator,
+        value:value,
      };
      console.log("filllll",filters)
     const { error, res,total,totalPages  } = await targetApis.getTargets(filters);
@@ -92,6 +105,9 @@ const { user } = useSelector((state: any) => state.user);
         page,  
         limit: rowsPerPage,   
         search:searchInput,
+        column:column,
+        operator:operator,
+        value:value,
       };
       const { error, res,total,totalPages } = await taskApis.getTasks(filters);
        
@@ -119,7 +135,7 @@ const { user } = useSelector((state: any) => state.user);
 }
 
  
-  }, [dispatch, page, rowsPerPage,pages,totalRows, searchInput,searchBaseYear,searchTargetYear]);
+  }, [dispatch, page, rowsPerPage,pages,totalRows, searchInput,searchBaseYear,searchTargetYear,column,operator,value]);
 
   useEffect(() => {
     getTargets();
@@ -184,7 +200,7 @@ const { user } = useSelector((state: any) => state.user);
       {selectedTab === 'Targets' && (
         <TargetsTable   page={page} rows={targets} rowsPerPage={rowsPerPage} 
         
-      onFilterBySearch={onFilterBySearch} onFilterByDate={onFilterByDate} pages={pages} handleChangePage={handleChangePage}
+      onFilterBySearch={onFilterBySearch}  onFilterByFiltering={onFilterByFiltering} onFilterByDate={onFilterByDate} pages={pages} handleChangePage={handleChangePage}
         />
 
  
@@ -205,13 +221,14 @@ const { user } = useSelector((state: any) => state.user);
 
         <MyTasksTable
         onFilterBySearch={onFilterBySearch}
+        onFilterByFiltering={onFilterByFiltering}
         onFilterByDate={onFilterByDate}
         handleChangePage={handleChangePage}
         pages={pages} 
           page={page}
           rows={tasks}  
           rowsPerPage={rowsPerPage}  
-          selectedTab={'Action'}
+          selectedTab={'Actions'}
         />
       )}
     </Stack>
