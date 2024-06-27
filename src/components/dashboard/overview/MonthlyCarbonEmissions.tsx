@@ -17,12 +17,16 @@ export function MonthlyCarbonEmissions({ sx, dataEmission,dataEmissionTarget }: 
     {
       name: 'Carbon Emissions',
       type: 'area',
-      data: dataEmission ? dataEmission.slice(0, 12) : [50, 60, 70, 80, 19, 100, 15, 40, 55, 90, 100, 70, 26],
+     data: dataEmission ? dataEmission.slice(0, 12) : [50, 60, 70, 80, 19, 100, 15, 40, 55, 90, 100, 70, 26],
+     // data: dataEmission ? dataEmission.slice(0, 12) : [],
+   
     },
     {
       name: 'Target Carbon Emissions',
       type: 'line',
       data:dataEmissionTarget ? dataEmissionTarget :  [60, 50, 60, 100, 40, 70, 120, 70, 90, 87, 34, 80, 60],
+   //   data:dataEmissionTarget ? dataEmissionTarget :  [],
+    
       color: '#CCCCCC',
       lineStyle: {
         dashArray: 5,

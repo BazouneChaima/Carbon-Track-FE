@@ -1,5 +1,74 @@
 import { Data } from '@/types/data';
 
+export function getEmissionsByLocation(data = []) {
+  const emissionsByLocation = data.reduce((acc, item) => {
+    const emissionTrackerValid = item.emission_tracker !== '' && !isNaN(item.emission_tracker);
+    const quantityValid = item.quantity !== '' && !isNaN(item.quantity);
+
+    if (emissionTrackerValid && quantityValid && item.location) {
+      const emissions = item.quantity * item.emission_tracker;
+      
+      if (acc[item.location]) {
+        acc[item.location] += emissions;
+      } else {
+        acc[item.location] = emissions;
+      }
+    }
+    return acc;
+  }, {});
+
+  // Convert object to array and sort by emission values in descending order
+  const sortedLocations = Object.entries(emissionsByLocation)
+    .map(([location, emissions]) => ({ location, emissions }))
+    .sort((a, b) => b.emissions - a.emissions);
+
+  // Get the first 5 locations with highest emissions
+  const top5Locations = sortedLocations.slice(0, 5);
+
+  // Format result to label-value format
+  const result = top5Locations.map(({ location, emissions }) => ({
+    label: location,
+    value: emissions,
+  }));
+
+  return result;
+}
+
+
+
+export function getFootPrint(data = []) {
+  const emissionsByCategory = data.reduce((acc, item) => {
+    const emissionTrackerValid = item.emission_tracker !== '' && !isNaN(item.emission_tracker);
+    const quantityValid = item.quantity !== '' && !isNaN(item.quantity);
+
+    if (emissionTrackerValid && quantityValid) {
+      const emissions = item.quantity * item.emission_tracker;
+      console.log("emissions==>", emissions, item.quantity, item.emission_tracker, item.category);
+      
+      if (acc[item.category]) {
+        acc[item.category] += emissions;
+      } else {
+        acc[item.category] = emissions;
+      }
+    }
+    return acc;
+  }, {});
+
+  const result = Object.entries(emissionsByCategory)
+    .map(([category, value]) => ({
+      label: category,
+      value,
+    }))
+    .filter(item => item.label !== undefined && !isNaN(item.value));
+
+  console.log("result==================>", result);
+  return result;
+}
+
+
+
+
+
 export function CalculateScopes(data: []) {
   //data.map((ite) => console.log(ite.scope1))
   let scope1 = data.reduce((accumulateur, element) => accumulateur + (element.scope1 ?? 0), 0);
@@ -28,12 +97,25 @@ export function extractScops(data: []) {
   return { scope1Arr, scope2Arr, scope3Arr };
 }
 
-export function getCarbonEmissionByCategory(data: []) {
-  const extractedData = data.map((item) => ({
+export function getCarbonEmissionByCategory(data: [], searchScope:string ) {
+  
+  let filteredData=[];
+  if(searchScope==="all"){
+     
+    filteredData=data;
+  }else{ 
+    filteredData=data.filter((item) => Object.keys(item).includes(searchScope) &&
+    item[searchScope] > 0);
+  }
+ 
+  const extractedData = filteredData.map((item) => ({
     category: item.category,
     emission_tracker: (item.emission_tracker && parseInt(item.emission_tracker)) ?? 0,
-  }));
-
+    scope1:item.scope1,
+    scope2:item.scope2,
+    scope3:item.scope3,
+     
+  })); 
   const summedData = extractedData.reduce((acc, item) => {
     if (!acc[item.category]) {
       acc[item.category] = 0;
@@ -46,7 +128,7 @@ export function getCarbonEmissionByCategory(data: []) {
   const result = Object.entries(summedData).map(([category, value]) => ({
     label: category,
     value,
-  }));
+  })); 
 
   return result;
 }
@@ -58,9 +140,11 @@ export function getCarbonEmission(data: []) {
 }
 
 export function getCarbonEmissionFromTarget(data: []) {
-  return data.map((item) => {
-    console.log(item.emissionReduction);
-    return item.emissionReduction;
+
+    console.log("getCarbonEmissionFromTarget",data)
+  return data.map( item => {
+    console.log(item.emissionReduction)
+    return item.emissionReduction ;
   });
 }
 export const isEmpty = (obj: any) => {

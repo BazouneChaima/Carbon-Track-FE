@@ -86,7 +86,7 @@ const [value,setValue]=useState('');
     setTotalRows(total);
     setPages(totalPages);
     setRows(res); 
-  }, [dispatch, page, rowsPerPage,pages,totalRows, searchInput,endFullDate,startFullDate,,column,operator,value]);
+  }, [dispatch, page, rowsPerPage,pages,totalRows, searchInput,endFullDate,startFullDate,column,operator,value]);
 
   useEffect(() => {
     getData();

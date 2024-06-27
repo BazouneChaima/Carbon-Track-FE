@@ -36,6 +36,8 @@ interface Scopes {
 }
 export default function Emissions(): React.JSX.Element {
   const [selectedTab, setSelectedTab] = React.useState<string>('7 Days');
+
+  const [selectedTabScopes, setSelectedTabScopes] = React.useState<string>('scope1');
   const dispatch = useDispatch();
   const [myScope, setMyScope] = React.useState<Scopes>({});
   const [dataEmissionByCat , setDataEmissionByCat] = React.useState([]);
@@ -49,8 +51,10 @@ export default function Emissions(): React.JSX.Element {
     if (error) {
       return;
     }
+    console.log("selectedTabScopes",selectedTabScopes)
     dispatch(setTargets(res));
-    setTarget(res);
+    setTarget(res); 
+    console.log("get targets emission",res)
     setDataEmissionTarget(getCarbonEmissionFromTarget(res))
   }, []);
 
@@ -62,9 +66,12 @@ export default function Emissions(): React.JSX.Element {
     }
     dispatch(setDataDB(res));
     setMyScope(CalculateScopes(res));
-    setDataEmissionByCat(getCarbonEmissionByCategory(res))
+    const carbon=getCarbonEmissionByCategory(res,selectedTabScopes);
+    setDataEmissionByCat(carbon); 
+
     setDataEmission(getCarbonEmission(res))
-  }, []);
+    console.log("setDataEmission=====>",getCarbonEmission(res))
+  }, [selectedTabScopes]);
 
   useEffect(() => {
     getTargets()
@@ -73,9 +80,17 @@ export default function Emissions(): React.JSX.Element {
 
   // Function to handle tab changes
   const handleTabChange = (event: React.ChangeEvent<any>, newValue: string) => {
+    console.log("handle")
     setSelectedTab(newValue);
   };
  
+
+  const handleTabChangeScopes = (event: React.ChangeEvent<any>, newValue: string) => {
+    console.log("handleTabChangeScopes",newValue)
+    setSelectedTabScopes(newValue);
+  };
+
+
   const handleImporter = () => {
     setIsOpen(!isOpen);
 
@@ -257,7 +272,9 @@ export default function Emissions(): React.JSX.Element {
 
       <Grid container spacing={3} mt={3}>
         <Grid lg={7} md={6} xs={12}>
-          <MonthlyCarbonEmissions sx={{ height: '100%' }} dataEmission={dataEmission} dataEmissionTarget={dataEmissionTarget}/>
+          <MonthlyCarbonEmissions sx={{ height: '100%' }} 
+          dataEmission={dataEmission} 
+          dataEmissionTarget={dataEmissionTarget}/>
         </Grid>
         <Grid lg={5} md={12} xs={12}>
           <Scopes   scope1={myScope.scope1} scope2={myScope.scope2} scope3={myScope.scope3} />
@@ -268,8 +285,8 @@ export default function Emissions(): React.JSX.Element {
             data={dataEmissionByCat}
             sx={{ height: '100%' }}
             showScopesTabs={true}
-            value={selectedTab}
-            handleChange={handleTabChange}
+            value={selectedTabScopes}
+            handleChange={handleTabChangeScopes}
           />
         </Grid>
       </Grid>

@@ -8,15 +8,11 @@ import { palette } from '@/styles/theme/colors';
 
 export interface FootprintsProps {
   sx?: any; // Define any custom styling props here
+ data:any; 
 }
 
-export function Footprints({ sx }: FootprintsProps): React.JSX.Element {
-  const data = [
-    { label: 'Electricity', value: 30 },
-    { label: 'Heating', value: 40 },
-    { label: 'Waste', value: 20 },
-    { label: 'AC', value: 10 },
-  ];
+export function Footprints({ sx,data }: FootprintsProps): React.JSX.Element {
+ console.log("fonntprints==========")
   const maxValue = Math.max(...data.map((item) => item.value));
   const options = {
     chart: {
