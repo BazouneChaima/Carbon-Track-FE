@@ -30,17 +30,28 @@ export default function Page(): React.JSX.Element {
   const [searchInput,setSearchInput]=useState('')
 const [searchDate,setSearchDate]=useState('')
   const [newTask, setNewTask] = useState<Task>({ ['createdBy']: user.id });
+  const [column,setColumn]=useState('');
+  const [operator,setOperator]=useState('');
+  const [value,setValue]=useState('');
   const rowsPerPage = 8;
   
   const [pages,setPages]=useState(1);
+  const [pagesMyTask,setPagesMyTask]=useState(1);
   const [page, setPage] = useState(1);
   const dispatch = useDispatch();
   const [rows, setRows] = useState([{}]);
    
 
   const [totalRows,setTotalRows]=useState(1);
+
+  const [totalRowsMyTask,setTotalRowsMyTask]=useState(1);
+
+
   const handleTabChange = (event: React.ChangeEvent<any>, newValue: string) => {
     setSelectedTab(newValue);
+    setSearchInput('');
+    setPage(1); 
+    
   };
  
 
@@ -62,9 +73,12 @@ const [searchDate,setSearchDate]=useState('')
  try {
   const filters = {
     dueDate:searchDate,
-    page,  
-    limit: rowsPerPage,   
+    //page,  
+     //limit: rowsPerPage,   
     search:searchInput,
+    column:column,
+    operator:operator,
+    value:value,
   };
   const { error, res,total,totalPages } = await taskApis.getTasks(filters);
   
@@ -74,13 +88,19 @@ const [searchDate,setSearchDate]=useState('')
 
     return;
   }
+
+  console.log("filterss===>",filters,selectedTab,res)
   if(selectedTab=="All Tasks"){
     dispatch(setTasks(res)); 
     setTasks(res);
     setRows(res);  
     setTotalRows(total);
-    setPages(totalPages);
-  }else{
+    setPages(Math.ceil(total/rowsPerPage));
+    
+    console.log("task 03",res,total,totalPages,page)
+  }
+  if(selectedTab=='My Tasks' || selectedTab=="Actions" )
+  {
     let filteredTasks: Task[];
     filteredTasks=res.filter((task: Task) => 
       task?.usersIds?.some((userObj: any) => userObj._id === user.id)
@@ -88,20 +108,14 @@ const [searchDate,setSearchDate]=useState('')
     dispatch(setTasks(filteredTasks)); 
     setTasks(filteredTasks);
     setRows(filteredTasks);  
-    setTotalRows(total);
-    setPages(totalPages);
+    setTotalRowsMyTask(total);
+    setPagesMyTask(Math.ceil(filteredTasks.length/total));
   }
-
-    
-  
-
-
-
-
+  setPage(1)
 } catch (error) {
   console.error('Error fetching tasks:', error);
 }
-}, [selectedTab,page, pages,totalRows,rowsPerPage, dispatch,searchInput,searchDate]);
+}, [selectedTab,page, pages,totalRows,rowsPerPage, dispatch,searchInput,searchDate,column,operator,value,]);
 
 
 useEffect(() => {
@@ -148,10 +162,20 @@ getTasks();
         
       
     };
-    const onFilterBySearch=(search)=>{ 
+  const onFilterBySearch=(search)=>{ 
       console.log("onFilterBySearch=>",search)
       setSearchInput(search)
+      setPage(1)
     }
+const onFilterByFiltering=(selectedValue,operator,value)=>{
+  console.log("searching equal page task==>",selectedValue,operator,value)
+  setColumn(selectedValue);
+    setOperator(operator);
+    setValue(value)
+  
+
+}
+
     const handleChangePage = ( newPage ) => {
       console.log("handle change page",page)
       setPage(newPage); 
@@ -214,11 +238,12 @@ getTasks();
       {selectedTab === 'All Tasks' && (
         <TasksTable
         onFilterBySearch={onFilterBySearch}
+        onFilterByFiltering={onFilterByFiltering}
         onFilterByDate={onFilterByDate}
         handleChangePage={handleChangePage}
         pages={pages} 
           page={page}
-          rows={rows}  
+          rows={tasks}  
           rowsPerPage={rowsPerPage} 
           selectedTab={'All Tasks'}
         />
@@ -226,9 +251,10 @@ getTasks();
       {selectedTab !== 'All Tasks' && (
         <MyTasksTable
         onFilterBySearch={onFilterBySearch}
+        onFilterByFiltering={onFilterByFiltering}
         onFilterByDate={onFilterByDate}
         handleChangePage={handleChangePage}
-        pages={pages} 
+        pages={pagesMyTask} 
           page={page}
           rows={rows}  
           rowsPerPage={rowsPerPage}  

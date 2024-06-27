@@ -14,17 +14,26 @@ import { CalanderIcon, FilterIcon } from '@/icons';
 import { Button } from '../Button';
 import dayjs from 'dayjs';
 import { start } from 'repl';
+import Filters from './Filters'; 
 
 interface FilterColumnsProps {
   onFilterByDate: (date: any) => void;
   onFilterBySearch: (search: any) => void;
+  onFilterByFiltering:(selectedValue:any,operator:any,value:any)=>void;
   isYear: boolean;
   isDate: boolean;
   isFullDate:boolean;
+  columns:Column[];
 }
 
-const FilterColumns = ({ onFilterByDate, onFilterBySearch, isYear, isDate,isFullDate }: FilterColumnsProps) => {
+ 
+
+
+
+
+const FilterColumns = ({ columns,onFilterByFiltering,onFilterByDate, onFilterBySearch, isYear, isDate,isFullDate }: FilterColumnsProps) => {
   const calendarRef = useRef<HTMLDivElement>(null);
+  const filterRef = useRef<HTMLDivElement>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isSelectingStartYear, setIsSelectingStartYear] = useState(false);
   const [isSelectingEndYear, setIsSelectingEndYear] = useState(false);
@@ -38,7 +47,12 @@ const FilterColumns = ({ onFilterByDate, onFilterBySearch, isYear, isDate,isFull
   const [startFullDate, setStartFullDate] = useState<Date | null>(null);
   const [endFullDate, setEndFullDate] = useState<Date | null>(null);
 
-
+  const [selectedColumn, setSelectedColumn] = useState(columns[0].field);
+  const [operator, setOperator] = useState<Operator>('equals');
+  const [filterValue, setFilterValue] = useState('');
+  //const [filteredData, setFilteredData] = useState(data);
+  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  
   const handleStartYearChange = (date) => { 
     if (isYear) {     
     
@@ -61,6 +75,7 @@ if(isDate){
   setStartDate(dayjs(date).format('YYYY-MM-DD'));
 }
   };
+  const toggleFilterDropdown = () => setIsFilterDropdownOpen(!isFilterDropdownOpen);
 
   const handleEndYearChange = (date) => {
     if (isYear) {    
@@ -81,8 +96,30 @@ if(isDate){
     setSearch(event.target.value);
   };
 
+
+  const handleSearchFilter=(event)=>{
+    console.log("handle filter search",event,selectedColumn,operator,filterValue) 
+    onFilterByFiltering(selectedColumn,operator,filterValue)
+     
+  }
+
+  const closeFilterDropdown = () => {
+    setIsFilterDropdownOpen(!isFilterDropdownOpen);
+  };
+
+  
+  
+  
+
+
+
+
+
+
+
   useEffect(() => {
     const handleClickOutside = (event) => {
+       
       if (calendarRef.current && !calendarRef.current.contains(event.target)) {
         setIsCalendarOpen(false);
         setIsSelectingStartYear(false);
@@ -119,7 +156,20 @@ if(isDate){
     };
   }, [startYear, endYear, onFilterByDate,startFullDate,endFullDate,startDate]);
 
+  const handleColumnChange = (event: React.ChangeEvent<HTMLSelectElement>) => setSelectedColumn(event.target.value);
+  const handleOperatorChange = (event: React.ChangeEvent<HTMLSelectElement>) =>{
+    console.log("setOperator",event.target.value)
+    setOperator(event.target.value);
+  }
+  const handleFilterValueChange = (event: React.ChangeEvent<HTMLInputElement>) => setFilterValue(event.target.value);
+
+ /*  const applyFilter = () => {
+    setFilteredData(filterData(data.slice(), selectedColumn, operator, filterValue));
+    setIsFilterDropdownOpen(false); // Close dropdown after applying filter
+  }; */
+  
   return (
+   
     <Box sx={{ backgroundColor: palette.common.white, position: 'relative', p: 2, padding: 'var(--12, 12px) 16px', gap: '12px 12px', borderRadius: '12px' }}>
       <Box sx={{ display: "flex", alignItems: 'flex-start', justifyContent: 'space-between', flexDirection: "row" }}>
         <OutlinedInput
@@ -133,6 +183,7 @@ if(isDate){
           }
           sx={outlinedInput}
         />
+ 
         <Box ref={calendarRef} sx={{
           display: 'flex',
           padding: 'var(--12, 12px) 16px',
@@ -153,14 +204,19 @@ if(isDate){
             {formattedSelectedDate || 'Select Date'}
           </Button>
           {isCalendarOpen && (
-            <Box sx={filterCalander}>
+            <Box >
+               <Box sx={{ position: 'absolute', top: '85px', right: '21px', zIndex: 100 }}>
+        <Box sx={{  border: '1px solid transparent', borderRadius: '8px', backgroundColor: 'white', padding: '8px' }}>
+     
               <LocalizationProvider dateAdapter={AdapterDayjs}>
+                
                 {isDate && (
                   <DateCalendar
                     views={['year', 'month', 'day']}
                     onChange={handleStartYearChange}
                   />
                 )}
+                
                 {isYear && (
                   <Box sx={{
                     display: 'flex',
@@ -255,18 +311,47 @@ if(isDate){
                   </Box>
                 )}
               </LocalizationProvider>
+              </Box></Box>
             </Box>
           )}
           <Button
             btnType="secondaryGray"
             sx={{ p: MuiButton.styleOverrides['sizeSmall'], justifyContent: 'left' }}
             startIcon={<FilterIcon />}
+            onClick={toggleFilterDropdown}
           >
             Filters
           </Button>
-        </Box>
+{/*  <Box sx={{ backgroundColor: palette.common.white, position: 'relative', p: 2, padding: 'var(--12, 12px) 16px', gap: '12px 12px', borderRadius: '12px' }}>
+      <Box sx={{ display: "flex", alignItems: 'flex-start', justifyContent: 'space-between', flexDirection: "row" }}>
+    */}
+           {isFilterDropdownOpen && (
+      <Box   sx={{ position: 'absolute', top: '80px', right: '16px', zIndex: 10,
+border: '0.1px solid gray', borderRadius: '8px', backgroundColor: 'white',  
+
+       }}>
+        
+          <Filters 
+            columns={columns}
+            selectedColumn={selectedColumn}
+            operator={operator}
+            filterValue={filterValue}
+            handleColumnChange={handleColumnChange}
+            handleOperatorChange={handleOperatorChange}
+            handleFilterValueChange={handleFilterValueChange}
+            applyFilter={handleSearchFilter}
+            onClose={() => setIsFilterDropdownOpen(false)}
+            isOpen={isFilterDropdownOpen} // Pass the isOpen state
+          />
+          
+        
       </Box>
-    </Box>
+    )}  
+
+        </Box>
+        
+      </Box>
+    </Box> 
   );
 };
 

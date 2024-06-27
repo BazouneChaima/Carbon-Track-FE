@@ -25,6 +25,9 @@ export default function ExportStepThree() {
   const [filteredRows, setFilteredRows] = useState([]); // State to store filtered data
   const [startFullDate, setStartFullDate] = useState<Date | ''>('');
   const [endFullDate, setEndFullDate] = useState<Date | ''>('');
+  const [column,setColumn]=useState('');
+  const [operator,setOperator]=useState('');
+  const [value,setValue]=useState('');
   const onFilterByDate = (selectedDate: Date) => {
     console.log("OnfitlerBydate page date==>",selectedDate[0],selectedDate[1])
     setStartFullDate(selectedDate[0]);
@@ -33,6 +36,16 @@ export default function ExportStepThree() {
         
       
     };
+
+  const onFilterByFiltering=(selectedValue,operator,value)=>{
+    console.log("searching equal page Date export==>",selectedValue,operator,value)
+    setColumn(selectedValue);
+      setOperator(operator);
+      setValue(value)
+    
+  
+  }
+
   useEffect(() => {
     if (file) {
       const reader = new FileReader();
@@ -122,40 +135,65 @@ export default function ExportStepThree() {
     dispatch(clearSelectedRow());
     return 'success';
   };
+  useEffect(() => {
+    const applyFilters = () => {
+      const filteredData = rows.filter((row) => {
+        // Combine location and category filtering with column-based filtering:
+        let locationMatch = true; // Default to true if no searchInput
+        let categoryMatch = true; // Default to true if no searchInput
+        let columnMatch = true; // Default to true if no column filter
   
+        // Location filtering
+        if (searchInput) {
+          locationMatch = row.location.toLowerCase().includes(searchInput.toLowerCase());
+        }
   
-    useEffect(() => {
-      const applyFilters = () => { 
-        const filteredData = rows.filter((row) => {
-          // Combine location and category filtering here:
-          const locationMatch = !searchInput || row.location.toLowerCase().includes(searchInput.toLowerCase());
-          const categoryMatch = !searchInput || row.category.toLowerCase().includes(searchInput.toLowerCase());
-             // Convert startFullDate and endFullDate to Date objects (assuming they are strings in YYYY-MM-DD format)
-          const startDate = startFullDate ? new Date(startFullDate) : null;
-          const endDate = endFullDate ? new Date(endFullDate) : null;
-          
-
-          const hasDateFilter = startDate || endDate;
-
-      // Date filtering logic (only applied if hasDateFilter is true)
-      const dateMatch = hasDateFilter
-        ? new Date(row.date) > startDate && new Date(row.date) < endDate
-        : true; // No date filter, so include all rows
-
-      return (locationMatch || categoryMatch) && dateMatch;
-
-
-     //     return locationMatch || categoryMatch; // AND condition for both criteria
-        });
-        console.log("filteredData",filteredData)
-        setFilteredRows(filteredData);
-       
-      };
+        // Category filtering
+        if (searchInput) {
+          categoryMatch = row.category.toLowerCase().includes(searchInput.toLowerCase());
+        }
   
-      applyFilters(); // Apply filters initially
+        // Column-based filtering (if column, operator, and value are provided)
+        if (column && operator && value) {
+          switch (operator) {
+            case 'equals':
+              columnMatch = row[column] === value;
+              break;
+            case 'startsWith':
+              columnMatch = row[column].toLowerCase().startsWith(value.toLowerCase());
+              break;
+            case 'endsWith':
+              columnMatch = row[column].toLowerCase().endsWith(value.toLowerCase());
+              break;
+            case 'contains':
+              columnMatch = row[column].toLowerCase().includes(value.toLowerCase());
+              break;
+            case 'greaterThan':
+              columnMatch = typeof row[column] === 'number' && row[column] > value; // Handle numeric values
+              break;
+            case 'lessThan':
+              columnMatch = typeof row[column] === 'number' && row[column] < value; // Handle numeric values
+              break;
+            default:
+              console.warn(`Unsupported operator: ${operator}`);
+              break;
+          }
+        }
   
-      // Dependency array: Re-run useEffect when searchInput or rows change
-    }, [searchInput,startFullDate, endFullDate,rows]);
+        // Apply combined filters with AND logic
+        return locationMatch && categoryMatch && columnMatch;
+      });
+  
+      console.log("filteredData", filteredData);
+      setFilteredRows(filteredData);
+    };
+  
+    applyFilters(); // Apply filters initially
+  
+    // Dependency array: Re-run useEffect when relevant data changes
+    return () => {}; // Empty cleanup function (optional)
+  }, [searchInput, rows, column, operator, value]);
+  
 
 
     const onFilterBySearch=(search)=>{ 
@@ -206,15 +244,16 @@ export default function ExportStepThree() {
         <DataTable 
           handleDelete={handleDelete} 
           handleUpdate={handleUpdate} 
-           
+          onFilterByFiltering={onFilterByFiltering}
           rows={filteredRows} 
           rowsPerPage={rowsPerPage}
           onFilterBySearch={onFilterBySearch} 
           onFilterByDate={onFilterByDate} 
-         // pages={pages} 
+          pages={pages} 
           handleChangePage={handleChangePage}
       />
 
+ 
 
 
       </Grid>
