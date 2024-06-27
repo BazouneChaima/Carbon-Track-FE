@@ -23,19 +23,28 @@ interface CustomersTableProps {
   rows?: object[];
   rowsPerPage?: number;
   onFilterBySearch:any;
-  
+  onFilterByFiltering:any;
   pages:number,
   handleChangePage:any;
 }
 
 export function EmissionFactorTable({   rows = [], rowsPerPage = 5,  onFilterBySearch,
- 
+  onFilterByFiltering,
   pages,
   handleChangePage, }: CustomersTableProps): React.JSX.Element {
   const [page, setPage] = useState(1); // Start on page 1
   console.log("rows from table",rows)
+
+  const columns: Column[] = [
+    { field: 'location', headerName: 'location', width: 150, filterable: true, type: 'string' },
+    { field: 'category', headerName: 'category', width: 110, filterable: true, type: 'string' },
+    {field:"quantity", headerName:"quantity", width: 160, filterable: true, type: 'number'},
+    {field:"emission_tracker", headerName:"Emission Factor", width: 160, filterable: true, type: 'number'},
+    {field:"source", headerName:"source", width: 160, filterable: true, type: 'string'},
+    {field:"name", headerName:"name", width: 160, filterable: true, type: 'string'},
+  ]
   const paginatedRows = usePagination({ rows, page, pageSize: rowsPerPage });
-  
+ 
   
   const updateChangePage = (event: any, newPage: any) => {
     console.log("update change data",newPage)
@@ -46,9 +55,13 @@ export function EmissionFactorTable({   rows = [], rowsPerPage = 5,  onFilterByS
     console.log("search",search)
     onFilterBySearch(search);
   }
+  const updateFiltering=(selectedValue:string,operator:string,value:string)=>{
+    console.log("update filtering from data table",selectedValue,operator,value);
+    onFilterByFiltering(selectedValue,operator,value);
+  }
   return (
     <Card>
-       <Header   onFilterBySearch={updateSearch}/>
+       <Header  columns={columns} onFilterByFiltering={updateFiltering}  onFilterBySearch={updateSearch}/>
      <Divider />
     <Box sx={{ overflowX: 'auto' }}>
       <Table sx={{ minWidth: '800px' }}>
@@ -76,8 +89,8 @@ export function EmissionFactorTable({   rows = [], rowsPerPage = 5,  onFilterByS
           </TableRow>
         </TableHead>
         <TableBody>
-        {rows &&
-              rows.map((row) => {
+        {paginatedRows &&
+              paginatedRows.map((row) => {
           //  const isSelected = selected?.has(row.id);
 
             return (

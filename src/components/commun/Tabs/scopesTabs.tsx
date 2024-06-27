@@ -17,10 +17,10 @@ interface ScopesTabsProps {
 
 const ScopesTabs: FC<ScopesTabsProps> = ({ value, handleChange }) => {
   const tabOptions: TabOption[] = [
-    { label: 'All Scopes', value: 'All Scopes' },
-    { label: 'Scopes O1', value: 'Scopes O1' },
-    { label: 'Scopes O2', value: 'Scopes O2' },
-    { label: 'Scopes O3', value: 'Scopes O3' },
+    { label: 'All Scopes', value: 'all' },
+    { label: 'Scopes O1', value: 'scope1' },
+    { label: 'Scopes O2', value: 'scope2' },
+    { label: 'Scopes O3', value: 'scope3' },
   ];
 
   const theme = useTheme();

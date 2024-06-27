@@ -20,6 +20,7 @@ import BottomDrawer from './BottomDrawer';
 import { setOpenToast } from '@/lib/store/reducer/useGlobalActions';
 import dayjs from 'dayjs';
 export default function Page(): React.JSX.Element {
+  console.log('rrrrrrrrrrrrrrrrrrrouting')
   const [selectedTab, setSelectedTab] = React.useState<string>('All Tasks');
   const [users, setUsers] = useState<User>({});
   const [isNewTask, setIsNewTask] = useState(false);
