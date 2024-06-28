@@ -17,10 +17,10 @@ interface CustomTabsProps {
 
 const CustomTabs: FC<CustomTabsProps> = ({ value, handleChange }) => {
   const tabOptions: TabOption[] = [
-    { label: '7 Days', value: '7 Days' },
-    { label: '30 Days', value: '30 Days' },
-    { label: 'Quarter', value: 'Quarter' },
-    { label: '12 Months', value: '12 Months' },
+    { label: '7 Days', value: '7days' },
+    { label: '30 Days', value: '30days' },
+    { label: 'Quarter', value: 'quarter' },
+    { label: '12 Months', value: '12months' },
   ];
 
   const theme = useTheme();

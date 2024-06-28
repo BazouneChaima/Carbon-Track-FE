@@ -1,5 +1,7 @@
 import { Data } from '@/types/data';
-
+import { LegendToggle } from '@mui/icons-material';
+import { format } from 'date-fns';
+import dayjs from 'dayjs'
 export function getEmissionsByLocation(data = []) {
   const emissionsByLocation = data.reduce((acc, item) => {
     const emissionTrackerValid = item.emission_tracker !== '' && !isNaN(item.emission_tracker);
@@ -97,8 +99,69 @@ export function extractScops(data: []) {
   return { scope1Arr, scope2Arr, scope3Arr };
 }
 
-export function getCarbonEmissionByCategory(data: [], searchScope:string ) {
-  
+
+/*  
+export function getCarbonEmissionByCategory(data: [], searchScope:string,searchDays:string){
+ 
+  const today = new Date();
+
+  const filteredData = data.filter((item) => {
+    if (searchScope === 'all') {
+      return true;
+    }
+    return item[searchScope] && item[searchScope] > 0;
+  });
+
+  const filteredByDate = filteredData.filter((item) => {
+    if (!item.date) {
+      return false; // Skip items without a date field
+    }
+
+    const formattedDate = format(item.date, 'yyyy-MM-dd'); // Format for comparison
+
+    if (searchDays === '7 days') {
+      return new Date(formattedDate) >= new Date(format(today.getTime() - 7 * 24 * 60 * 60 * 1000, 'yyyy-MM-dd'));
+    } else if (searchDays === 'Quarter') {
+      const quarterStart = new Date(today.getFullYear(), 0, 1);
+      if (today.getMonth() > 2) {
+        quarterStart.setFullYear(quarterStart.getFullYear() + 1);
+      }
+      return new Date(formattedDate) >= quarterStart;
+    } else if (searchDays === '30 Days') {
+      return new Date(formattedDate).getFullYear() === today.getFullYear() && new Date(formattedDate).getMonth() === today.getMonth();
+    } else if (searchDays === '12 Months') {
+      return new Date(formattedDate).getFullYear() === today.getFullYear();
+    } else {
+      throw new Error(`Invalid searchDays: ${searchDays}`);
+    }
+  });
+
+  const extractedData = filteredByDate.map((item) => ({
+    category: item.category,
+    emission_tracker: item.emission_tracker ?? 0,
+    scope1: item.scope1,
+    scope2: item.scope2,
+    scope3: item.scope3,
+  }));
+
+  const summedData = extractedData.reduce((acc, item) => {
+    if (!acc[item.category]) {
+      acc[item.category] = 0;
+    }
+    acc[item.category] += item.emission_tracker || 0; // Handle missing emission_tracker
+    return acc;
+  }, {} as Record<string, number>);
+
+  const result = Object.entries(summedData).map(([category, value]) => ({
+    label: category,
+    value,
+  }));
+  console.log("search carbon emission",result)
+  return result;
+} */
+
+ export function getCarbonEmissionByCategory(data: [], searchScope:string,searchDays:string ) {
+  const today = new Date();
   let filteredData=[];
   if(searchScope==="all"){
      
@@ -131,12 +194,74 @@ export function getCarbonEmissionByCategory(data: [], searchScope:string ) {
   })); 
 
   return result;
-}
+}  
 
-export function getCarbonEmission(data: []) {
-  return data.map((item) => {
-    return item.emission_tracker;
-  });
+ 
+
+export function getCarbonEmission(data: [],searchDays: '7days' | '30days' | 'quarter' | '12months') {
+  const today = new Date();
+  /* return data.map( item => {
+    return item.emission_tracker ;
+  }); */
+  let filteredData=[]; 
+  let threshold,formattedThreshold;
+  switch (searchDays) {
+    case '7days': 
+     threshold = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+     formattedThreshold = threshold.toISOString().split('T')[0];
+       filteredData=
+              data.filter(
+                (item) => (dayjs(item.Date).format('YYYY-MM-DD')> formattedThreshold
+              && dayjs(item.Date).format('YYYY-MM-DD')<= dayjs(today).format('YYYY-MM-DD')
+              )
+              )
+        return filteredData.map( item => {
+          return item.emission_tracker ;
+        });       
+      
+      break;
+
+    case '30days': 
+     threshold = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    formattedThreshold = threshold.toISOString().split('T')[0];
+    filteredData=
+              data.filter(
+                (item) => (dayjs(item.Date).format('YYYY-MM-DD')> formattedThreshold
+              && dayjs(item.Date).format('YYYY-MM-DD')<= dayjs(today).format('YYYY-MM-DD')
+              )
+              )
+        return filteredData.map( item => {
+          return item.emission_tracker ;
+        }); 
+    break;
+    case 'quarter':
+      // Calculate start and end of current quarter
+      const currentQuarter = Math.floor((today.getMonth() / 3));
+      const quarterStart = new Date(today.getFullYear(), currentQuarter * 3, 1);
+      const quarterEnd = new Date(quarterStart.getFullYear(), quarterStart.getMonth() + 3, 0);
+        console.log("quarter start and end",quarterStart,quarterEnd,currentQuarter)
+      // Filter data for the current quarter
+      filteredData = data.filter((item) => {
+        const itemDate = new Date(item.Date);
+        return itemDate >= quarterStart && itemDate <= quarterEnd;
+      });
+      console.log("filteredData qurater",filteredData)
+      return filteredData.map( item => {
+        return item.emission_tracker ;
+      }); 
+      break;
+       case '12months':
+      filteredData= data.filter((item) => new Date(item.Date).getFullYear() === today.getFullYear());
+      return filteredData.map( item => {
+        return item.emission_tracker ;
+      }); 
+      break;
+     
+  }
+  
+  
+
+
 }
 
 export function getCarbonEmissionFromTarget(data: []) {
