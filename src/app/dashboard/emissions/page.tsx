@@ -35,7 +35,7 @@ interface Scopes {
   sum?: number;
 }
 export default function Emissions(): React.JSX.Element {
-  const [selectedTab, setSelectedTab] = React.useState<string>('7 Days');
+  const [selectedTab, setSelectedTab] = React.useState<string>('12months');
 
   const [selectedTabScopes, setSelectedTabScopes] = React.useState<string>('scope1');
   const dispatch = useDispatch();
@@ -46,6 +46,7 @@ export default function Emissions(): React.JSX.Element {
   const [target, setTarget] = React.useState<Target>({});
 
   const [isOpen, setIsOpen] = React.useState(false);
+
   const getTargets = React.useCallback(async (): Promise<void> => {
     const { error, res } = await targetApis.getTargets();
     if (error) {
@@ -64,14 +65,15 @@ export default function Emissions(): React.JSX.Element {
     if (error) {
       return;
     }
+    console.log("getData===>",selectedTab)
     dispatch(setDataDB(res));
     setMyScope(CalculateScopes(res));
-    const carbon=getCarbonEmissionByCategory(res,selectedTabScopes);
-    setDataEmissionByCat(carbon); 
-
-    setDataEmission(getCarbonEmission(res))
-    console.log("setDataEmission=====>",getCarbonEmission(res))
-  }, [selectedTabScopes]);
+    const carbon=getCarbonEmissionByCategory(res,selectedTabScopes,selectedTab);
+    setDataEmissionByCat(carbon);  
+    const carbonEmission=getCarbonEmission(res,selectedTab);
+    setDataEmission(carbonEmission)
+   /*  console.log("setDataEmission=====>",getCarbonEmission(res)) */
+  }, [selectedTabScopes,selectedTab]);
 
   useEffect(() => {
     getTargets()
@@ -80,7 +82,7 @@ export default function Emissions(): React.JSX.Element {
 
   // Function to handle tab changes
   const handleTabChange = (event: React.ChangeEvent<any>, newValue: string) => {
-    console.log("handle")
+    console.log("handle",newValue)
     setSelectedTab(newValue);
   };
  
@@ -272,9 +274,11 @@ export default function Emissions(): React.JSX.Element {
 
       <Grid container spacing={3} mt={3}>
         <Grid lg={7} md={6} xs={12}>
-          <MonthlyCarbonEmissions sx={{ height: '100%' }} 
+          <MonthlyCarbonEmissions 
           dataEmission={dataEmission} 
-          dataEmissionTarget={dataEmissionTarget}/>
+          dataEmissionTarget={dataEmissionTarget}
+          sx={{ height: '100%' }} 
+          />
         </Grid>
         <Grid lg={5} md={12} xs={12}>
           <Scopes   scope1={myScope.scope1} scope2={myScope.scope2} scope3={myScope.scope3} />

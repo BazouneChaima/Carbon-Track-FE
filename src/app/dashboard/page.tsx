@@ -31,7 +31,7 @@ import { dataApis } from '@/lib/data/dataApis';
 import { CalculateScopes, getCarbonEmission, getCarbonEmissionByCategory,getEmissionsByLocation, getCarbonEmissionFromTarget,getFootPrint } from '@/lib/helper';
 import { setDataDB } from '@/lib/store/reducer/useFile';
 export default function Page(): React.JSX.Element {
-  const [selectedTab, setSelectedTab] = React.useState<string>('7 Days');
+  const [selectedTab, setSelectedTab] = React.useState<string>('12months');
   const [myScope, setMyScope] = React.useState<Scopes>({});
   const dispatch = useDispatch();
   const [dataEmissionByCat , setDataEmissionByCat] = React.useState([]);
@@ -49,29 +49,31 @@ export default function Page(): React.JSX.Element {
     { label: 'Waste', value: 20 },
     { label: 'AC', value: 10 },
   ]; */
+ 
+
   const getData = React.useCallback(async (): Promise<void> => {
     const { error, res } = await dataApis.getData();
     if (error) {
       return;
     }
      dispatch(setDataDB(res));
-    setMyScope(CalculateScopes(res));
+   /*  setMyScope(CalculateScopes(res));
     const carbon=getCarbonEmissionByCategory(res,"all");
-    setDataEmissionByCat(carbon);
-    setDataEmission(getCarbonEmission(res))  
-    console.log("get data")
-    const foot=getFootPrint(res)
+    setDataEmissionByCat(carbon); */
+  setDataEmission(getCarbonEmission(res,selectedTab))  
+    console.log("get data",selectedTab,getCarbonEmission(res,selectedTab))  
+  /*   const foot=getFootPrint(res)
     console.log('getFootPrint=====>',foot)
-    setFootPrint(getFootPrint(res))  
-    const location=getEmissionsByLocation(res)
+    setFootPrint(getFootPrint(res))   */
+  /*   const location=getEmissionsByLocation(res)
     console.log("get locations",location)
-    setLocationData(getEmissionsByLocation(res));
-  }, []);
+    setLocationData(getEmissionsByLocation(res)); */
+  }, [selectedTab]);
 
   useEffect(() => {
-    //getTargets()
+    
     getData();
-  }, [getData  /* getTargets */]);
+  }, [getData   ]);
   // Function to handle tab changes
   const handleTabChange = (event: React.ChangeEvent<any>, newValue: string) => {
     setSelectedTab(newValue);
@@ -145,7 +147,11 @@ export default function Page(): React.JSX.Element {
           <Tasks sx={{ height: '100%' }} />
         </Grid>
         <Grid lg={8} md={6} xs={12}>
-          <MonthlyCarbonEmissions sx={{ height: '100%' }} />
+       <MonthlyCarbonEmissions 
+          dataEmission={dataEmission} 
+          dataEmissionTarget={dataEmissionTarget}
+          sx={{ height: '100%' }} 
+          /> 
         </Grid>
         <Grid lg={4} md={12} xs={12}>
          
