@@ -30,7 +30,7 @@ export function CarbonPerMonth({ diff, trend, sx, value }: BudgetProps): React.J
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
             <Stack spacing={1}>
               <Typography variant="body1" fontWeight={700}>
-                Carbon per Month
+                Carbon per Months
               </Typography>
               <Box display="flex" gap={2} alignItems="flex-end">
                 <Typography variant="h4" fontWeight={700}>

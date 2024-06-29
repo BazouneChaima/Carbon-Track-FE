@@ -35,14 +35,15 @@ export function EmissionFactorTable({   rows = [], rowsPerPage = 5,  onFilterByS
   const [page, setPage] = useState(1); // Start on page 1
   console.log("rows from table",rows)
 
-  const columns: Column[] = [
-    { field: 'location', headerName: 'location', width: 150, filterable: true, type: 'string' },
-    { field: 'category', headerName: 'category', width: 110, filterable: true, type: 'string' },
-    {field:"quantity", headerName:"quantity", width: 160, filterable: true, type: 'number'},
-    {field:"emission_tracker", headerName:"Emission Factor", width: 160, filterable: true, type: 'number'},
-    {field:"source", headerName:"source", width: 160, filterable: true, type: 'string'},
-    {field:"name", headerName:"name", width: 160, filterable: true, type: 'string'},
+  const columns: Column[] = [ 
+    { field: 'Category', headerName: 'category', width: 110, filterable: true, type: 'string' },
+      {field:"Source", headerName:"source", width: 160, filterable: true, type: 'string'},
+    {field:"Name", headerName:"name", width: 160, filterable: true, type: 'string'},
   ]
+
+   
+
+
   const paginatedRows = usePagination({ rows, page, pageSize: rowsPerPage });
  
   
@@ -60,11 +61,11 @@ export function EmissionFactorTable({   rows = [], rowsPerPage = 5,  onFilterByS
     onFilterByFiltering(selectedValue,operator,value);
   }
   return (
-    <Card>
+    <Card  sx={{display:"block"}}>
        <Header  columns={columns} onFilterByFiltering={updateFiltering}  onFilterBySearch={updateSearch}/>
      <Divider />
     <Box sx={{ overflowX: 'auto' }}>
-      <Table sx={{ minWidth: '800px' }}>
+      <Table sx={{ minWidth: '1000px' }}>
         <TableHead>
           <TableRow>
             <TableCell padding="checkbox">

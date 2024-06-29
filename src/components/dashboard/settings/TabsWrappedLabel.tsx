@@ -145,7 +145,9 @@ export   function TabsWrappedLabel() {
       <Notifications />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={5}>
-      <EmissionFactor/>
+        <Box sx={{display:"block"}}>
+        <EmissionFactor/>
+      </Box>
       </CustomTabPanel>
     </Box>
     </Stack>
