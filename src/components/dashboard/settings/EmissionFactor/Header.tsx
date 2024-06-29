@@ -53,43 +53,10 @@ const FilterColumns = ({ columns,onFilterByFiltering,onFilterByDate, onFilterByS
   //const [filteredData, setFilteredData] = useState(data);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   
-  const handleStartYearChange = (date) => { 
-    if (isYear) {     
-    
-    console.log("date===>",isYear,isFullDate,date.year())
-    setStartYear(date.year());
-    setIsSelectingStartYear(false);
-
-  }
-  if (isFullDate)  {
-  console.log("date===>",isYear,isFullDate,dayjs(date).format('YYYY-MM-DD'))
-  setStartFullDate(dayjs(date).format('YYYY-MM-DD')); 
-     
-   
-  setIsSelectingStartYear(false);
-}
-
-if(isDate){
-
-  console.log("isdate",isDate,date);
-  setStartDate(dayjs(date).format('YYYY-MM-DD'));
-}
-  };
+ 
   const toggleFilterDropdown = () => setIsFilterDropdownOpen(!isFilterDropdownOpen);
 
-  const handleEndYearChange = (date) => {
-    if (isYear) {    
-    setEndYear(date.year());
-    console.log("end year",date.year())
-    setIsSelectingEndYear(false);
-    }
-    if(isFullDate){
-      console.log("date===>",isYear,isFullDate,dayjs(date).format('YYYY-MM-DD'))
-      setEndFullDate(dayjs(date).format('YYYY-MM-DD')); 
-
-    }
-
-  };
+   
 
   const handleSearchChange = (event) => {
     onFilterBySearch(event.target.value);
@@ -103,9 +70,7 @@ if(isDate){
      
   }
 
-  const closeFilterDropdown = () => {
-    setIsFilterDropdownOpen(!isFilterDropdownOpen);
-  };
+  
 
   
   

@@ -1,7 +1,6 @@
 'use client';
 
-import  React,{useEffect} from 'react';
-import { useState } from 'react';
+import  React,{useEffect,useState,useRef} from 'react';
 import type { Metadata } from 'next';
 import { Box, Typography,Button } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -28,9 +27,28 @@ import { TotalEmissions } from '@/components/dashboard/overview/TotalEmissions';
 import Scopes from "@/components/dashboard/overview/Scopes"
 // export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } satisfies Metadata;
 import { dataApis } from '@/lib/data/dataApis';
-import { CalculateScopes, getCarbonEmission, getCarbonEmissionByCategory,getEmissionsByLocation, getCarbonEmissionFromTarget,getFootPrint } from '@/lib/helper';
+import {getEmissionPerFilterCard, getCarbonPerFilterCard,getCarbonEmissionScopesChart,CalculateScopes, getCarbonEmission, getCarbonEmissionByCategory,getEmissionsByLocation, getCarbonEmissionFromTarget,getFootPrint } from '@/lib/helper';
 import { setDataDB } from '@/lib/store/reducer/useFile';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import jsPDF from 'jspdf';
+import FilterDateComponent from '@/components/commun/Date/CustomDate';
+
 export default function Page(): React.JSX.Element {
+  const calendarRef = useRef<HTMLDivElement>(null);
+ 
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isSelectingStartYear, setIsSelectingStartYear] = useState(false);
+  const [isSelectingEndYear, setIsSelectingEndYear] = useState(false);
+ 
+
+  const [startFullDate, setStartFullDate] = useState<Date | null>(null);
+  const [endFullDate, setEndFullDate] = useState<Date | null>(null);
+  
+  
+  const [formattedSelectedDate, setFormattedSelectedDate] = useState('');
+
   const [selectedTab, setSelectedTab] = React.useState<string>('12months');
   const [myScope, setMyScope] = React.useState<Scopes>({});
   const dispatch = useDispatch();
@@ -42,33 +60,87 @@ export default function Page(): React.JSX.Element {
   
   const [target, setTarget] = React.useState<Target>({});
   const [locationsData,setLocationData] = React.useState([]);
+  const [CarbonPerMonthCard,setCarbonPerMonthCard]=React.useState(0);
+  const [emissionPerMonthCard,setEmissionPerMonthCard]=React.useState(0);
 
-/*   const footprintData = [
-    { label: 'Electricity', value: 30 },
-    { label: 'Heating', value: 40 },
-    { label: 'Waste', value: 20 },
-    { label: 'AC', value: 10 },
-  ]; */
- 
+  const [carbonEmissionsScopesChart, setCarbonEmissionsScopesChart] = React.useState([]);
+  carbonEmissionsScopesChart
+
+  const handleApply=(firstDate,endDate)=>{
+    console.log("handleApply",firstDate,endDate)
+    setIsCalendarOpen(!isCalendarOpen)
+    setEndFullDate(endDate)
+    setStartFullDate(firstDate)
+    const formattedDate = `${(firstDate)} - ${(endDate)}`;
+    setFormattedSelectedDate(formattedDate);
+    setSelectedTab('')
+  
+  }
+  const handleCancel=()=>{
+    console.log("handleCancel")
+    setIsCalendarOpen(!isCalendarOpen)
+    setEndFullDate('')
+    setStartFullDate('')
+  }
+  const handleClear=()=>{
+    console.log("handleClear")
+    setFormattedSelectedDate('select Date')
+    setEndFullDate('')
+    setStartFullDate('')
+     
+  }
+  
 
   const getData = React.useCallback(async (): Promise<void> => {
     const { error, res } = await dataApis.getData();
     if (error) {
       return;
     }
-     dispatch(setDataDB(res));
-   /*  setMyScope(CalculateScopes(res));
-    const carbon=getCarbonEmissionByCategory(res,"all");
-    setDataEmissionByCat(carbon); */
-  setDataEmission(getCarbonEmission(res,selectedTab))  
-    console.log("get data",selectedTab,getCarbonEmission(res,selectedTab))  
-  /*   const foot=getFootPrint(res)
-    console.log('getFootPrint=====>',foot)
-    setFootPrint(getFootPrint(res))   */
-  /*   const location=getEmissionsByLocation(res)
-    console.log("get locations",location)
-    setLocationData(getEmissionsByLocation(res)); */
-  }, [selectedTab]);
+
+    console.log("get carbon===>",selectedTab,startFullDate,endFullDate);
+    dispatch(setDataDB(res));
+    if(startFullDate && endFullDate && selectedTab==''){ 
+      setCarbonPerMonthCard(getCarbonPerFilterCard(res,"custom",startFullDate,endFullDate));
+      setEmissionPerMonthCard(getEmissionPerFilterCard(res,"custom",startFullDate,endFullDate));
+      setMyScope(CalculateScopes(res,"custom",startFullDate,endFullDate));
+      setFootPrint(getFootPrint(res,"custom",startFullDate,endFullDate))
+      setDataEmission(getCarbonEmission(res,"custom",startFullDate,endFullDate)) 
+      setLocationData(getEmissionsByLocation(res,"custom",startFullDate,endFullDate)); 
+      setDataEmissionByCat(
+        getCarbonEmissionByCategory(res,"all","custom",startFullDate,endFullDate))
+  //    setDataEmissionByCat(getCarbonEmissionByCategory(res,"all",,"custom",startFullDate,endFullDate))
+    /*   setCarbonEmissionsScopesChart(getCarbonEmissionScopesChart(res,"custom",startFullDate,endFullDate))
+   
+      
+     
+
+   */
+    }else if(selectedTab){ 
+      setStartFullDate('')
+      setEndFullDate('')
+
+      
+      setCarbonPerMonthCard(getCarbonPerFilterCard(res,selectedTab))
+      setEmissionPerMonthCard(getEmissionPerFilterCard(res,selectedTab))
+      setMyScope(CalculateScopes(res,selectedTab));
+      setFootPrint(getFootPrint(res,selectedTab));
+      setDataEmission(getCarbonEmission(res,selectedTab)) 
+      setLocationData(getEmissionsByLocation(res,selectedTab)); 
+      setDataEmissionByCat(getCarbonEmissionByCategory(res,"all",selectedTab,startFullDate,endFullDate))
+     // setDataEmissionByCat(getCarbonEmissionByCategory(res,all,selectedTab,startFullDate,endFullDate))
+   
+
+     /*  setCarbonEmissionsScopesChart(getCarbonEmissionScopesChart(res,selectedTab))
+
+    setDataEmissionByCat(getCarbonEmissionByCategory(res,"all"))
+
+  setFootPrint(getFootPrint(res))
+  setLocationData(getEmissionsByLocation(res));  */
+    
+    }
+ 
+     
+  }, [selectedTab,startFullDate,endFullDate]);
 
   useEffect(() => {
     
@@ -107,11 +179,19 @@ export default function Page(): React.JSX.Element {
                 background: 'var(--Colors-Base-00, #FFF)',
               }}
               startIcon={<CalanderIcon />}
+              onClick={() => setIsCalendarOpen(!isCalendarOpen)}
             >
               <Typography variant="h7" sx={{ color: 'var(--Grey-grey-600, #606977)' }}>
                 Select Date
               </Typography>
             </Button>
+            {isCalendarOpen &&
+            <FilterDateComponent
+       
+       handleApply={handleApply}
+       handleCancel={handleCancel}
+       handleClear={handleClear}
+     />}
           </Grid>
           
         </Grid>
@@ -125,21 +205,27 @@ export default function Page(): React.JSX.Element {
       </div>
       <Grid container spacing={3} mt={3}>
         <Grid lg={4} sm={6} xs={12}>
-          <CarbonPerMonth diff={12} trend="up" sx={{ height: '100%' }} value="548752" />
+          <CarbonPerMonth diff={12} trend="up" sx={{ height: '100%' }} value={CarbonPerMonthCard} />
         </Grid>
         <Grid lg={4} sm={6} xs={12}>
-          <TotalEmissions diff={0.9} trend="down" sx={{ height: '100%' }} value="548752" />
+          <TotalEmissions diff={0.9} trend="down" sx={{ height: '100%' }} value={emissionPerMonthCard} />
         </Grid>
         <Grid lg={4} sm={6} xs={12}>
           <Reduction diff={1.4} trend="up" sx={{ height: '100%' }} value={200} />
         </Grid>
         <Grid lg={8} xs={12}>
           <CarbonEmissionsScope
-            chartSeries={[
-              { name: 'Scope 1', data: [20, 25, 30, 35, 40, 45, 50, 55, 60, 55, 50, 45] },
+           /*  chartSeries={[
+              { name: 'Scope 1', data: [50, 25, 30, 35, 40, 45, 50, 55, 60, 55, 50, 45] },
               { name: 'Scope 2', data: [30, 35, 40, 45, 50, 55, 60, 55, 50, 45, 40, 35] },
               { name: 'Scope 3', data: [40, 45, 50, 55, 60, 55, 50, 45, 40, 35, 30, 25] },
-            ]}
+            ]} */
+              chartSeries= 
+              {[
+                { name: 'Scope 1', data: carbonEmissionsScopesChart[0] },
+                { name: 'Scope 2', data:carbonEmissionsScopesChart[1] },
+                { name: 'Scope 3', data: carbonEmissionsScopesChart[3] },
+              ]}
             sx={{ height: '100%' }}
           />
         </Grid>

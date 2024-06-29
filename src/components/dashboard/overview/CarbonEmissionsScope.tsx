@@ -22,7 +22,7 @@ export interface SalesProps {
   sx?: SxProps;
 }
 
-export function CarbonEmissionsScope({ chartSeries, sx }: SalesProps): React.JSX.Element {
+export function CarbonEmissionsScope({ chartSeries, sx,value }: SalesProps): React.JSX.Element {
   const chartOptions = useChartOptions();
 
   return (
@@ -37,7 +37,7 @@ export function CarbonEmissionsScope({ chartSeries, sx }: SalesProps): React.JSX
                 fontSize: '16px',
               }}
             >
-              2,458,547
+              {value}
             </Typography>
             <Typography variant="caption">tCO2e</Typography>
           </Box>

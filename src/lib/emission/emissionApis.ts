@@ -36,14 +36,13 @@ class EmissionApis {
 
   async getEmissions(filters = {}): Promise<{ res?: any;total?:any,totalPages?:any, error?: string }> {
     // Make API request
-    const queryString = new URLSearchParams(filters);
-    
+    const queryString = new URLSearchParams(filters); 
     try {
       const res = await this.apiEmission.get('/?' + queryString.toString(), { withCredentials: true });
     
+      console.log("backend res===>",res.data.emissions)
       const total = res.data.total || 1; // Handle potential missing total property
       const totalPages=res.data.totalPages || 1;
-      console.log("backend===>",res.data.emissions,total,totalPages)
       return {
         res: res.data.emissions.map((e: any) => ({ ...e, id: e._id })), 
          total,

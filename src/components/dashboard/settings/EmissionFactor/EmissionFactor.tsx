@@ -23,11 +23,11 @@ const [value,setValue]=useState('');
   const dispatch = useDispatch(); 
     
   const { emissions, totalRows, totalPages } = useSelector((state: any) => state.emission);
-
+  const [rows, setRows] = useState([{}]);
   const getEmissions = useCallback(async (): Promise<void> => {
     const filters = {
-       page,  
-       limit: rowsPerPage,  
+         page,  
+       limit: rowsPerPage,   
        search: searchInput,
        column:column,
        operator:operator,
@@ -41,9 +41,8 @@ const [value,setValue]=useState('');
    /*  dispatch(setEmissions(res)); */
    dispatch(setEmissions({ emissions: res, total, totalPages }));
    setEmission(res);
-   /*  setTotalRows(total); */
+   setRows(res); 
     setPages(totalPages);
-
  
     
     console.log("set emission==>", page,emissions,emission);
