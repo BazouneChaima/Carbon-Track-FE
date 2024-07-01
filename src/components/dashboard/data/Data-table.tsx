@@ -125,8 +125,8 @@ export function DataTable({
     setOpenUpdate(false);
   };
   const updateSearch=(search:string)=>{
-    console.log("search Data table",search)
-    onFilterBySearch(search);
+    console.log("updateSearch====>",search)
+      onFilterBySearch(search);
   }
   // const handleDelete = React.useCallback(async (): Promise<void> => {
   //   const { error, res } = await dataApis.deleteData(selectedRow._id);

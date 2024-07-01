@@ -29,7 +29,7 @@ export default function ExportStepThree() {
   const [operator,setOperator]=useState('');
   const [value,setValue]=useState('');
   const onFilterByDate = (selectedDate: Date) => {
-    console.log("OnfitlerBydate page date==>",selectedDate[0],selectedDate[1])
+    //console.log("OnfitlerBydate page date==>",selectedDate,selectedDate[0],selectedDate[1])
     setStartFullDate(selectedDate[0]);
     setEndFullDate(selectedDate[1])  
       
@@ -145,7 +145,10 @@ export default function ExportStepThree() {
   
         // Location filtering
         if (searchInput) {
+
+        console.log("North America===>",searchInput,locationMatch)
           locationMatch = row.location.toLowerCase().includes(searchInput.toLowerCase());
+        
         }
   
         // Category filtering
@@ -179,9 +182,76 @@ export default function ExportStepThree() {
               break;
           }
         }
+
+        //console.log("locationMatch",locationMatch,categoryMatch,columnMatch)
   
         // Apply combined filters with AND logic
         return locationMatch && categoryMatch && columnMatch;
+      });
+  
+      console.log("filteredData", filteredData);
+      setFilteredRows(filteredData);
+    };
+  
+    applyFilters();  
+   
+    return () => {};  
+  }, [ rows, column, operator, value]);
+  
+
+
+  useEffect(() => {
+    const applyFilters = () => {
+      const filteredData = rows.filter((row) => { 
+        let locationMatch = true; 
+        let categoryMatch = true;  
+  
+        // Location filtering
+        if (searchInput) {
+
+        console.log("North America===>",searchInput,locationMatch)
+          locationMatch = row.location.toLowerCase().includes(searchInput.toLowerCase());
+        
+        }
+  
+        // Category filtering
+        if (searchInput) {
+          categoryMatch = row.category.toLowerCase().includes(searchInput.toLowerCase());
+        }
+  
+   
+        return locationMatch || categoryMatch  ;
+      });
+  
+      console.log("filteredData", filteredData);
+      setFilteredRows(filteredData);
+    };
+  
+    applyFilters();  
+   
+    return () => {};  
+  }, [searchInput, rows]);
+
+
+  useEffect(() => {
+    const applyFilters = () => {
+      console.log("apply filter date",rows)
+      const filteredData = rows.filter((row) => {
+        let dateMatch = false;  
+        if (startFullDate && endFullDate) {
+        
+          const rowDate = dayjs(row.date).format('YYYY-MM-DD'); 
+          // Convert startFullDate and endFullDate to Date objects for comparison
+          const startDate = dayjs(startFullDate).format('YYYY-MM-DD');
+          const endDate = dayjs(endFullDate).format('YYYY-MM-DD');
+  
+          //console.log("if start and end ",row.Date,startDate,endDate,rowDate)
+          // Check if row date is between (inclusive) start and end dates
+          dateMatch = rowDate >= startDate && rowDate <= endDate;
+          console.log("datematch",dateMatch)
+        }
+   
+        return dateMatch ;  
       });
   
       console.log("filteredData", filteredData);
@@ -192,9 +262,8 @@ export default function ExportStepThree() {
   
     // Dependency array: Re-run useEffect when relevant data changes
     return () => {}; // Empty cleanup function (optional)
-  }, [searchInput, rows, column, operator, value]);
+  }, [startFullDate, endFullDate]); // Add other filter dependencies
   
-
 
     const onFilterBySearch=(search)=>{ 
       console.log("onFilterBySearch=>",search,filteredRows)
