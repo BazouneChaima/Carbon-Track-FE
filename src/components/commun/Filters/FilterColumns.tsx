@@ -16,6 +16,7 @@ import dayjs from 'dayjs';
 import { start } from 'repl';
 import Filters from './Filters'; 
 
+import FilterDateComponent from '@/components/commun/Date/CustomDate';
 interface FilterColumnsProps {
   onFilterByDate: (date: any) => void;
   onFilterBySearch: (search: any) => void;
@@ -53,6 +54,39 @@ const FilterColumns = ({ columns,onFilterByFiltering,onFilterByDate, onFilterByS
   //const [filteredData, setFilteredData] = useState(data);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   
+  const handleApply = (firstDate, endDate) => {
+    console.log("handle applu", firstDate, endDate);
+    if (isFullDate) {
+      setStartFullDate(dayjs(firstDate).format('YYYY-MM-DD'));
+      setEndFullDate(dayjs(endDate).format('YYYY-MM-DD'));
+  
+      // Call onFilterByDate after state updates (optional)
+      onFilterByDate([startFullDate, endFullDate]);
+    }
+  
+    setIsCalendarOpen(false);
+  };
+  
+  const handleCancel=()=> {
+    setEndFullDate('')
+    setStartFullDate('')
+    setIsCalendarOpen(false)
+
+
+  }
+const handleClear=()=>{
+  setEndFullDate('')
+  setStartFullDate('')
+  setIsCalendarOpen(false)
+}
+
+
+
+
+
+
+
+
   const handleStartYearChange = (date) => { 
     if (isYear) {     
     
@@ -116,7 +150,18 @@ if(isDate){
 
 
 
-
+  useEffect(() => {
+    // ... (existing useEffect logic)
+  
+    if (startFullDate && endFullDate) { 
+      const dateRange = [startFullDate, endFullDate];
+          onFilterByDate(dateRange);
+          const formattedDate = `${(startFullDate)} - ${(endFullDate)}`;
+          setFormattedSelectedDate(formattedDate);
+      
+    }
+  }, [startFullDate, endFullDate]);
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
        
@@ -133,12 +178,7 @@ if(isDate){
           console.log("use effect date r ange",startYear,endYear)
           setFormattedSelectedDate(formattedDate);
         }
-        if (isFullDate && startFullDate && endFullDate){
-          const dateRange = [startFullDate, endFullDate];
-          onFilterByDate(dateRange);
-          const formattedDate = `${(startFullDate)} - ${(endFullDate)}`;
-          setFormattedSelectedDate(formattedDate);
-        }
+      
 
         if (isDate && startDate){ 
           setFormattedSelectedDate(`${(startDate)}`);
@@ -154,7 +194,7 @@ if(isDate){
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [startYear, endYear, onFilterByDate,startFullDate,endFullDate,startDate]);
+  }, [startYear, endYear, onFilterByDate,startDate]);
 
   const handleColumnChange = (event: React.ChangeEvent<HTMLSelectElement>) => setSelectedColumn(event.target.value);
   const handleOperatorChange = (event: React.ChangeEvent<HTMLSelectElement>) =>{
@@ -266,7 +306,7 @@ if(isDate){
 
 
             {isFullDate && (
-                  <Box sx={{
+     /*              <Box sx={{
                     display: 'flex',
                     flexDirection: "column",
                     alignItems: 'center',
@@ -308,7 +348,14 @@ if(isDate){
                         onChange={handleEndYearChange}
                       />
                     )}
-                  </Box>
+                  </Box> */
+
+                  <FilterDateComponent
+       
+                  handleApply={handleApply}
+                  handleCancel={handleCancel}
+                  handleClear={handleClear}
+                />
                 )}
               </LocalizationProvider>
               </Box></Box>
