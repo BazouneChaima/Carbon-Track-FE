@@ -22,18 +22,26 @@ import { MobileNav } from './mobile-nav';
 import { UserPopover } from './user-popover';
 import { useDispatch, useSelector } from 'react-redux';
 import Toast from '@/components/commun/Toast/Toast';
-import { setCloseToast } from '@/lib/store/reducer/useGlobalActions';
+import { setCloseToast, setOpenToast } from '@/lib/store/reducer/useGlobalActions';
 import { userApis } from '@/lib/user/userApis';
+import io from 'socket.io-client';
+import { NotificationPopover } from './notification-popover';
+import { addNotification, setNotification } from '@/lib/store/reducer/useNotification';
+
+//i will add it in const file 
+const socket = io('http://localhost:5000');
 
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   const [searchValue, setSearchValue] = React.useState<string>(''); // State for search value
 
   const userPopover = usePopover<HTMLDivElement>();
+  const notificationPopover = usePopover<HTMLDivElement>();
   const { isOpenToast, message, type } = useSelector((state: any) => state.globalActions);
   const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.user);
   const [profileImage, setProfileImage] = React.useState(null);
+  const { notifications } = useSelector((state: any) => state.notification);
 
   const getImage = React.useCallback(async (type : string): Promise<void> => {
     console.log('here upload');
@@ -53,7 +61,21 @@ export function MainNav(): React.JSX.Element {
 
   React.useEffect (() => { 
     getImage('PROFILE')
+    
   }, [user])
+
+  React.useEffect(() => {
+    
+    socket.on('notification', (data) => {
+      dispatch(setOpenToast({message : data.message, type:'warning'}))
+      dispatch(addNotification(data.notification))
+      // toast(data.message);/
+    });
+
+    return () => {
+      socket.off('notification');
+    };
+  }, []);
   return (
     <React.Fragment>
       <Box
@@ -105,7 +127,7 @@ export function MainNav(): React.JSX.Element {
                 <UsersIcon />
               </IconButton>
             </Tooltip> */}
-            <Tooltip title="Notifications">
+            <Tooltip title="Notifications" onClick={notificationPopover.handleOpen} ref={notificationPopover.anchorRef}>
               <Badge badgeContent={4} color="success" variant="dot">
                 <IconButton>
                   <BellIcon />
@@ -121,6 +143,7 @@ export function MainNav(): React.JSX.Element {
           </Stack>
         </Stack>
       </Box>
+      <NotificationPopover anchorEl={notificationPopover.anchorRef.current} onClose={notificationPopover.handleClose} open={notificationPopover.open} />
       <UserPopover anchorEl={userPopover.anchorRef.current} onClose={userPopover.handleClose} open={userPopover.open} />
       <MobileNav onClose={() => setOpenNav(false)} open={openNav} />
       <Toast message={message} open={isOpenToast} type={type} handleClose={() => dispatch(setCloseToast())} />

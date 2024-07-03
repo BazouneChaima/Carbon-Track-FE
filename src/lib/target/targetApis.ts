@@ -3,25 +3,9 @@
 import axios from 'axios';
 
 import { Target } from '@/types/target';
-import type { User } from '@/types/user';
 
 import api from '../api';
-
-function generateToken(): string {
-  const arr = new Uint8Array(12);
-  window.crypto.getRandomValues(arr);
-  return Array.from(arr, (v) => v.toString(16).padStart(2, '0')).join('');
-}
-
-// const user = {
-//   id: 'USR-000',
-//   avatar: '/assets/avatar.png',
-//   firstName: 'Afaf',
-//   lastName: 'KELAI',
-//   email: 'afafkelly@gmail.com',
-// } satisfies User;
-
-export interface NewTargetParams {
+t interface NewTargetParams {
   name?: string;
   type?: string;
   emissionReduction?: string;
@@ -43,7 +27,8 @@ class TargetApis {
 
       return {res : {...response.data, id: response.data._id}}
     } catch (e) {
-      return { error: 'backend error' };
+      const error = e.response ? e.response.data.error : 'Connexion Error';
+      return { error: error };
     }
 
     // // We do not handle the API, so we'll just generate a token and store it in localStorage.
@@ -68,7 +53,8 @@ class TargetApis {
          total,
          totalPages
       }; } catch (e) {
-      return { error: 'backend error'+e };
+        const error = e.response ? e.response.data.error : 'Connexion Error';
+        return { error: error };
     }
 
     // // We do not handle the API, so we'll just generate a token and store it in localStorage.
@@ -86,7 +72,8 @@ class TargetApis {
 
       return {  };
     } catch (e) {
-      return { error: 'backend error' };
+      const error = e.response ? e.response.data.error : 'Connexion Error';
+      return { error: error };
     }
 
     return {};
@@ -99,15 +86,9 @@ class TargetApis {
 
       return {};
     } catch (e) {
-      return { error: 'backend error' + e };
+      const error = e.response ? e.response.data.error : 'Connexion Error';
+      return { error: error };
     }
-
-    // // We do not handle the API, so we'll just generate a token and store it in localStorage.
-    // const token = generateToken();
-
-    // localStorage.setItem('custom-auth-token', token);
-
-    return {};
   }
 }
 
