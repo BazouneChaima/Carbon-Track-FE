@@ -45,7 +45,7 @@ export function MainNav(): React.JSX.Element {
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = React.useState(false);
   const [searchResults, setSearchResults] = React.useState<any[]>([]);
-
+  const [profileImage, setProfileImage] = React.useState(null);
   const [searchResultsTaregts, setSearchResultsTaregt] = React.useState<any[]>([]);
 
   const [searchResultsData, setSearchResultsData] = React.useState<any[]>([]);
