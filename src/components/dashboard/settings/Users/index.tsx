@@ -14,8 +14,15 @@ import CloseIcon from '@mui/icons-material/Close';
 import NewUser from "./NewUser"
 import UserDrawer from './UserDrawer';
 import { useDispatch,useSelector } from 'react-redux';
+import UserDrawer from './UserDrawer';
+import { useDispatch,useSelector } from 'react-redux';
 import Avatar from '@mui/material/Avatar';
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { setUsers } from '@/lib/store/reducer/userSlice';
+import {userApis} from '@/lib/user/userApis';
+import {User} from '@/types/user';
+import { roleApis } from '@/lib/role/roleApis';
+import {setRoles} from '@/lib/store/reducer/useRole';
 import { setUsers } from '@/lib/store/reducer/userSlice';
 import {userApis} from '@/lib/user/userApis';
 import {User} from '@/types/user';
@@ -71,8 +78,16 @@ export   function Users() {
   const [paginatedUser, setPaginatedUser] = useState<User[]>([]);
 const {roles}=useSelector((state:any)=>state.role)
   const { users } = useSelector((state: any) => state.user);
+  const dispatch=useDispatch();
+  const [user, setUser] = useState<User>({});
+  const page = 0;
+  const rowsPerPage = 3;
+  const [paginatedUser, setPaginatedUser] = useState<User[]>([]);
+const {roles}=useSelector((state:any)=>state.role)
+  const { users } = useSelector((state: any) => state.user);
   const handleNewUser=()=>{
     setIsNewUser(!isNewUser); 
+    getRoles();
     getRoles();
    }
   const [newUser, setNewUser] = useState('');
@@ -140,6 +155,7 @@ useEffect(() => {
 
 const handleClose=()=>{setIsNewUser(false);}
   
+  
   return (
     <Stack spacing={6} sx={{ height: '80vh', overflowY: 'auto' }}>
      <Grid container alignItems="center" >
@@ -203,10 +219,18 @@ const handleClose=()=>{setIsNewUser(false);}
    
       <UsersTable
           count={paginatedUser.length}
+          count={paginatedUser.length}
           page={page}
+          rows={users}
           rows={users}
           rowsPerPage={rowsPerPage}
         />
+ 
+        
+     
+
+{isNewUser  && (
+<UserDrawer
  
         
      
@@ -220,9 +244,16 @@ open={isNewUser} handleCancelUser={handleClose} userUpdate={user} roles={roles} 
 
 />
   )}
+open={isNewUser} handleCancelUser={handleClose} userUpdate={user} roles={roles} headerName="Add User" isUpdate={false}
+
+ 
+
+/>
+  )}
     </Stack>
   );
 }
+function applyPagination(rows: any[], page: number, rowsPerPage: number): User[] {
 function applyPagination(rows: any[], page: number, rowsPerPage: number): User[] {
   return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 }

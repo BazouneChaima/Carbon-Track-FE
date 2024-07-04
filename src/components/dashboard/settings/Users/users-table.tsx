@@ -2,13 +2,17 @@
 
 import React,{useState,useCallback} from 'react';
 import Avatar from '@mui/material/Avatar'; 
+import React,{useState,useCallback} from 'react';
+import Avatar from '@mui/material/Avatar'; 
 import Card from '@mui/material/Card';
 import Checkbox from '@mui/material/Checkbox';
+import Divider from '@mui/material/Divider'; 
 import Divider from '@mui/material/Divider'; 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead'; 
+import TableRow from '@mui/material/TableRow'; 
 import TableRow from '@mui/material/TableRow'; 
 import dayjs from 'dayjs';
 import { useSelection } from '@/hooks/use-selection'; 
@@ -47,6 +51,10 @@ import {User} from '@/types/user';
 import {Role} from '@/types/role';
 import UserDrawer from './UserDrawer';
 import { userApis } from '@/lib/user/userApis';
+import {User} from '@/types/user';
+import {Role} from '@/types/role';
+import UserDrawer from './UserDrawer';
+import { userApis } from '@/lib/user/userApis';
 function noop(): void {
   // do nothing
 }
@@ -72,10 +80,13 @@ export function UsersTable({ count = 100, rows = [], rowsPerPage = 5 }: UsersTab
   const [userToDelete,setUserToDelete] = useState<User | null>(null);
   const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
   const {roles}=useSelector((state:any)=>state.role)
+  const {roles}=useSelector((state:any)=>state.role)
   const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < rows.length;
   const selectedAll = rows.length > 0 && selected?.size === rows.length;
   const [open,setIsOpen]=useState(false);
+  const [open,setIsOpen]=useState(false);
  
+  const [newUser, setNewUser] = useState<User>({}); 
   const [newUser, setNewUser] = useState<User>({}); 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -264,7 +275,13 @@ const handleClose=()=>{setIsOpen(false);}
   </Button>
   <Button aria-label="modify" sx={{ display: 'contents' }}   onClick={()=>handleDelete(row)}>
 
+                    <Button aria-label="modify" sx={{ display: 'contents' }} onClick={()=>handleModify(row)}>
+    <ModifyIcon />
+  </Button>
+  <Button aria-label="modify" sx={{ display: 'contents' }}   onClick={()=>handleDelete(row)}>
+
                     <DeleteIcon/>
+                    </Button>
                     </Button>
                     </Stack>
                      </TableCell>
@@ -275,6 +292,33 @@ const handleClose=()=>{setIsOpen(false);}
             })}
           </TableBody>
         </Table>
+
+        {open  && (
+<UserDrawer
+
+open={open} handleCancelUser={handleClose} userUpdate={newUser} roles={roles} headerName="Edits Roles" isUpdate={true}
+
+ 
+ 
+
+
+/>
+  )}
+
+{isDelete && userToDelete!=null && (
+          <DeleteConfirmation
+            open={isDelete}
+            handleDelete={handleDeleteUser}
+            setOpen={setIsDelete}
+            title="Do you want to delete this user?"
+            subtitle="Are you sure you want to delete this user."
+            primary="Delete"
+            secondary="Cancel"
+            
+          primaryColor={{ backgroundColor: palette.danger[500] }}
+          />
+      )}
+
 
         {open  && (
 <UserDrawer
