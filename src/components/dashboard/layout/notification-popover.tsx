@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { notificationApis } from '@/lib/notification/notificationApis';
-import { setNotification } from '@/lib/store/reducer/useNotification';
+import { setNotification, setReadAllNotification } from '@/lib/store/reducer/useNotification';
 import { Button } from '@/components/commun/Button';
 import NotificationItem from '@/components/special/ListItem/NotificationItem';
 import { palette } from '@/styles/theme/colors';
@@ -20,17 +20,30 @@ export interface UserPopoverProps {
 export function NotificationPopover({ anchorEl, onClose, open }: UserPopoverProps): React.JSX.Element {
   const dispatch = useDispatch();
   const { notifications } = useSelector((state: any) => state.notification);
+
   const getAllNotif = React.useCallback(async (): Promise<void> => {
     try {
       const { res, error } = await notificationApis.getAllNotif();
-
       if (error) {
         return;
       }
-      console.log({ res });
       dispatch(setNotification(res));
     } catch (err) {}
   }, []);
+
+  const readAllNotif = React.useCallback(async (): Promise<void> => {
+    try {
+      console.log('notification data jere ' + JSON.stringify(notifications))
+      const ids = notifications.map(item => item._id);
+      const { res, error } = await notificationApis.readAllNotif(ids);
+      if (error) {
+        return;
+      }
+      dispatch(setReadAllNotification());
+    } catch (err) {}
+  }, [notifications]);
+
+
   React.useEffect(() => {
     getAllNotif();
   }, []);
@@ -46,7 +59,7 @@ export function NotificationPopover({ anchorEl, onClose, open }: UserPopoverProp
         <CardHeader
           action={
             <Box display="flex" alignItems="flex-end">
-              <Button btnType="link" sx={{ color: palette.primary[500], fontWeight: 700 }}>
+              <Button btnType="link" sx={{ color: palette.primary[500], fontWeight: 700 }} onClick={readAllNotif}>
                 Mark all as read
               </Button>
             </Box>
@@ -64,7 +77,7 @@ export function NotificationPopover({ anchorEl, onClose, open }: UserPopoverProp
         <CardContent>
           <Stack spacing={2}>
             {notifications &&
-              notifications.map((notification: any) => <NotificationItem notification={notification} />)}
+              notifications.slice(0, 5).map((notification: any) => <NotificationItem notification={notification} />)}
             {/* <Divider /> */}
           </Stack>
         </CardContent>

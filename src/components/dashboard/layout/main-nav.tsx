@@ -13,22 +13,22 @@ import { Bell as BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
+import { useDispatch, useSelector } from 'react-redux';
+import io from 'socket.io-client';
 
+import { setCloseToast, setOpenToast } from '@/lib/store/reducer/useGlobalActions';
+import { addNotification, setNotification } from '@/lib/store/reducer/useNotification';
+import { userApis } from '@/lib/user/userApis';
 import { usePopover } from '@/hooks/use-popover';
 import ThemeToggle from '@/components/commun/ThemeToggle/ThemeToggle';
+import Toast from '@/components/commun/Toast/Toast';
 import { palette } from '@/styles/theme/colors';
 
 import { MobileNav } from './mobile-nav';
-import { UserPopover } from './user-popover';
-import { useDispatch, useSelector } from 'react-redux';
-import Toast from '@/components/commun/Toast/Toast';
-import { setCloseToast, setOpenToast } from '@/lib/store/reducer/useGlobalActions';
-import { userApis } from '@/lib/user/userApis';
-import io from 'socket.io-client';
 import { NotificationPopover } from './notification-popover';
-import { addNotification, setNotification } from '@/lib/store/reducer/useNotification';
+import { UserPopover } from './user-popover';
 
-//i will add it in const file 
+//i will add it in const file
 const socket = io('http://localhost:5000');
 
 export function MainNav(): React.JSX.Element {
@@ -42,32 +42,33 @@ export function MainNav(): React.JSX.Element {
   const { user } = useSelector((state: any) => state.user);
   const [profileImage, setProfileImage] = React.useState(null);
   const { notifications } = useSelector((state: any) => state.notification);
+  const hasSentStatus = notifications.some((item) => item.status === 'SENT');
+  const getImage = React.useCallback(
+    async (type: string): Promise<void> => {
+      console.log('here upload');
+      const { res, error } = await userApis.getImage(user._id, type);
 
-  const getImage = React.useCallback(async (type : string): Promise<void> => {
-    console.log('here upload');
-    const { res, error } = await userApis.getImage(user._id , type);
-    
-    const blob = new Blob([res.data], { type: 'image/jpeg' });
-    console.log({blob})
-    const imageUrl = URL.createObjectURL(blob);
-    setProfileImage(imageUrl)
-    if (error) {
-      // dispatch(setOpenToast({message : error, type:'error'}))
-      return;
-    }
-    // dispatch(setOpenToast({message : 'Data Added Successfully', type:'success'}))
-    // onClose();
-  }, [user]);
-
-  React.useEffect (() => { 
-    getImage('PROFILE')
-    
-  }, [user])
+      const blob = new Blob([res.data], { type: 'image/jpeg' });
+      console.log({ blob });
+      const imageUrl = URL.createObjectURL(blob);
+      setProfileImage(imageUrl);
+      if (error) {
+        // dispatch(setOpenToast({message : error, type:'error'}))
+        return;
+      }
+      // dispatch(setOpenToast({message : 'Data Added Successfully', type:'success'}))
+      // onClose();
+    },
+    [user]
+  );
 
   React.useEffect(() => {
-    
+    getImage('PROFILE');
+  }, [user]);
+
+  React.useEffect(() => {
     socket.on('notification', (data) => {
-      dispatch(setOpenToast({message : data.message, type:'warning'}))
+      // dispatch(setOpenToast({message : data.message, type:'warning'}))
       dispatch(addNotification(data.notification))
       // toast(data.message);/
     });
@@ -128,22 +129,33 @@ export function MainNav(): React.JSX.Element {
               </IconButton>
             </Tooltip> */}
             <Tooltip title="Notifications" onClick={notificationPopover.handleOpen} ref={notificationPopover.anchorRef}>
-              <Badge badgeContent={4} color="success" variant="dot">
-                <IconButton>
-                  <BellIcon />
-                </IconButton>
-              </Badge>
+              {hasSentStatus ? (
+                <Badge badgeContent={4} color="success" variant="dot">
+                  <IconButton>
+                    <BellIcon />
+                  </IconButton>
+                </Badge>
+              ) : (
+              
+                  <IconButton>
+                    <BellIcon />
+                  </IconButton>
+              )}
             </Tooltip>
             <Avatar
               onClick={userPopover.handleOpen}
               ref={userPopover.anchorRef}
-              src={profileImage || "/assets/avatar.png"}
+              src={profileImage || '/assets/avatar.png'}
               sx={{ cursor: 'pointer' }}
             />
           </Stack>
         </Stack>
       </Box>
-      <NotificationPopover anchorEl={notificationPopover.anchorRef.current} onClose={notificationPopover.handleClose} open={notificationPopover.open} />
+      <NotificationPopover
+        anchorEl={notificationPopover.anchorRef.current}
+        onClose={notificationPopover.handleClose}
+        open={notificationPopover.open}
+      />
       <UserPopover anchorEl={userPopover.anchorRef.current} onClose={userPopover.handleClose} open={userPopover.open} />
       <MobileNav onClose={() => setOpenNav(false)} open={openNav} />
       <Toast message={message} open={isOpenToast} type={type} handleClose={() => dispatch(setCloseToast())} />

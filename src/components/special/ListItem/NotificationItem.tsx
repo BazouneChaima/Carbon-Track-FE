@@ -2,6 +2,7 @@ import React from 'react';
 import { Avatar, Divider, Grid, Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
+import moment from 'moment';
 
 import { palette } from '@/styles/theme/colors';
 
@@ -26,21 +27,17 @@ const NotificationItem: React.FC<NotificationProps> = ({ notification }) => {
       sx={styledContainer}
     >
       <Grid lg={2} sm={2} xs={2} sx={{ alignContent: 'center' }}>
-        <Avatar alt="Text" />
+        <Avatar alt={notification.user?.username} src="http://localhost:5000/public/PROFILE-1719583558844.jpg" />
       </Grid>
       <Grid lg={10} sm={10} xs={10}>
         <Stack direction={'row'} alignItems={'center'} spacing={0.2}>
-          <Typography sx={{ fontWeight: 'bold' }}>
-            {notification.user?.username}{' '}
-          </Typography>
-          <Typography  color="text.secondary">
-              {' '}{notification.message}
-            </Typography>
+          <Typography sx={{ fontWeight: 'bold' }}>{notification.user?.username} </Typography>
+          <Typography color="text.secondary"> {notification.message}</Typography>
         </Stack>
         <Stack width="100%" direction="row" spacing={5}>
           <Box width="100%" sx={{ alignContent: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              {notification.message}
+            {moment.utc(notification.created_at).local().startOf('seconds').fromNow()}
             </Typography>
           </Box>
         </Stack>

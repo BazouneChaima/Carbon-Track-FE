@@ -18,9 +18,17 @@ const notificationSlice = createSlice({
       state.notifications.push(action.payload);
       //state.dataDB = [...state.dataDB , action.payload]
     },
+    setReadAllNotification(state) {
+      const updatedNotif = state.notifications.map(item => ({
+        ...item,
+        status: "SEEN"
+      }));
+      state.notifications = updatedNotif;
+      //state.dataDB = [...state.dataDB , action.payload]
+    },
   },
 });
 
-export const { setNotification, clearNotification , addNotification} = notificationSlice.actions;
+export const { setNotification, clearNotification , addNotification , setReadAllNotification} = notificationSlice.actions;
 
 export default notificationSlice.reducer;
