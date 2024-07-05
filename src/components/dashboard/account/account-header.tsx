@@ -98,7 +98,7 @@ const ProfileHeader = ({ sx }: ProfileHeaderProps) => {
       console.log('here upload');
       const { res, error } = await userApis.getImage(user._id, type);
 
-      const blob = new Blob([res.data], { type: 'image/jpeg' });
+      const blob = new Blob([res?.data], { type: 'image/jpeg' });
       const imageUrl = URL.createObjectURL(blob);
       if (type === 'COVER') {
         setSelectedImage(imageUrl);
