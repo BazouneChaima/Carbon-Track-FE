@@ -122,11 +122,11 @@ const Others: React.FC<OthersProps> = ({ target }) => {
           secondary="Cancel"
           primaryColor={{ backgroundColor: palette.danger[500] }}
         />}
-        {activeStep==0 ?
+      {/*   {activeStep==0 ?
       <ExportStep1 open={isUpdate} onClose={() => {setIsUpdate(!isUpdate);setActiveStep(0)}} onUpdateTarget={handleModify} target={target} activeStep={activeStep} onNext={handleNext} />
           :
           <ExportRapport open={isUpdate} onClose={() => {setIsUpdate(!isUpdate);setActiveStep(0)}} onUpdateTarget={handleModify} activeStep={activeStep} target={target} />
-        }
+        } */}
 
      </div>
   );

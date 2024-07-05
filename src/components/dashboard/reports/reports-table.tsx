@@ -16,12 +16,14 @@ import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
 import { useSelection } from '@/hooks/use-selection';  
 import FilterColumns from '../../commun/Filters/FilterColumns';
-import { Pagination } from '@mui/material';
+ 
 import Others from './Others';
 import CardHeader from '@mui/material/CardHeader';
 import { makeStyles } from '@mui/styles';
 import { palette } from '@/styles/theme/colors';
 
+import { Pagination } from '@/components/commun/Pagination/Pagination';
+import usePagination from '@/hooks/use-pagination';
 const useStyles = makeStyles((theme) => ({
     cardHeader: {
       backgroundColor: palette.common.white,
@@ -42,13 +44,29 @@ export interface Reports {
 }
 
 interface ReportsTableProps {
-  count?: number;
   page?: number;
-  rows?: Reports[];
+  rows?: object[];
   rowsPerPage?: number;
+  importFunc?: boolean;
+  handleDelete: any;
+  handleUpdate: any; 
+  onFilterBySearch:any;
+  onFilterByDate:any;
+  pages:number,
+  handleChangePage:any;
+  onFilterByFiltering:any;
 }
 
-export function ReportsTable({ count = 100, rows = [], rowsPerPage = 5 }: ReportsTableProps): React.JSX.Element {
+export function ReportsTable({  rows = [],
+  rowsPerPage = 5,
+  importFunc = false,
+  handleDelete,
+  handleUpdate,
+  onFilterBySearch,
+  onFilterByDate,
+  onFilterByFiltering,
+  pages,
+  handleChangePage,}: ReportsTableProps): React.JSX.Element {
   const rowIds = React.useMemo(() => {
     return rows.map((Reports) => Reports.id);
   }, [rows]);
@@ -61,11 +79,29 @@ export function ReportsTable({ count = 100, rows = [], rowsPerPage = 5 }: Report
 
   const [page, setPage] = useState(1); // Start on page 1
   const [totalPages, setTotalPages] = useState(10); // Replace with actual total pages
+  const columns: Column[] = [
+    { field: 'location', headerName: 'location', width: 150, filterable: true, type: 'string' },
+    { field: 'category', headerName: 'category', width: 110, filterable: true, type: 'string' },
+    {field:"quantity", headerName:"quantity", width: 160, filterable: true, type: 'number'},
+    {field:"emission_tracker", headerName:"Emission Factor", width: 160, filterable: true, type: 'number'},
+    {field:"source", headerName:"source", width: 160, filterable: true, type: 'string'},
+ 
+  ];
 
-  const handleChangePage = (event, newPage) => {
+  const updateChangePage = (event: any, newPage: any) => {
+    console.log("update change data",newPage)
     setPage(newPage);
+    handleChangePage(newPage);
   };
-  
+ 
+  const updateSearch=(search:string)=>{
+    console.log("updateSearch====>",search)
+      onFilterBySearch(search);
+  }
+  const updateFiltering=(selectedValue:string,operator:string,value:string)=>{
+    console.log("update filtering from data table",selectedValue,operator,value);
+    onFilterByFiltering(selectedValue,operator,value);
+  }
   return (
     <Card   >
       
@@ -79,7 +115,12 @@ export function ReportsTable({ count = 100, rows = [], rowsPerPage = 5 }: Report
         <TableRow  >
           <TableCell colSpan={12}   >
             <Card variant="outlined" sx={{border:"0"  }}>
-              <CardHeader   title={<FilterColumns  /> }  />
+              <CardHeader   title={
+                
+                <FilterColumns   columns={columns} onFilterByFiltering={updateFiltering} 
+                onFilterByDate={onFilterByDate} onFilterBySearch={updateSearch} isYear={false} 
+                isDate={false} isFullDate={true}/>
+                }  />
           
       
             </Card>
@@ -155,16 +196,17 @@ export function ReportsTable({ count = 100, rows = [], rowsPerPage = 5 }: Report
       <Divider />
       <Box style={{ display: 'flex', justifyContent: 'center' }}>
       <Pagination
-        count={count} // Total number of pages
-        page={4} // Current page
-        onChange={handleChangePage}  
-        color="primary" // Set color
-        size="medium"   
-        showFirstButton  
-        showLastButton 
-        shape="rounded"
-         
-      />
+          paginatioType="gray"
+          // color='gray'
+          //count={pages} // Total number of pages
+          count={Math.ceil(rows.length / rowsPerPage)}
+          page={page}
+          onChange={updateChangePage}
+          size="small"
+          showFirstButton
+          showLastButton
+          shape="rounded"
+        />
       </Box>
     </Card>
   );

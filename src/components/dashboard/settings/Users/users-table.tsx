@@ -2,17 +2,14 @@
 
 import React,{useState,useCallback} from 'react';
 import Avatar from '@mui/material/Avatar'; 
-import React,{useState,useCallback} from 'react';
-import Avatar from '@mui/material/Avatar'; 
 import Card from '@mui/material/Card';
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider'; 
-import Divider from '@mui/material/Divider'; 
+
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead'; 
-import TableRow from '@mui/material/TableRow'; 
 import TableRow from '@mui/material/TableRow'; 
 import dayjs from 'dayjs';
 import { useSelection } from '@/hooks/use-selection'; 
@@ -53,10 +50,6 @@ import {User} from '@/types/user';
 import {Role} from '@/types/role';
 import UserDrawer from './UserDrawer';
 import { userApis } from '@/lib/user/userApis';
-import {User} from '@/types/user';
-import {Role} from '@/types/role';
-import UserDrawer from './UserDrawer';
-import { userApis } from '@/lib/user/userApis';
 function noop(): void {
   // do nothing
 }
@@ -76,7 +69,7 @@ export function UsersTable({   rows = [], rowsPerPage = 5, handleChangePage,page
   const rowIds = React.useMemo(() => {
     return rows.map((user) => user.id);
   }, [rows]);
-
+const [page,setPage]=useState(1)
   const [isDelete,setIsDelete]=useState(false);
   const dispatch=useDispatch();
   const [isChecked, setIsChecked] = useState(false); 
@@ -84,13 +77,10 @@ export function UsersTable({   rows = [], rowsPerPage = 5, handleChangePage,page
   const [userToDelete,setUserToDelete] = useState<User | null>(null);
   const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
   const {roles}=useSelector((state:any)=>state.role)
-  const {roles}=useSelector((state:any)=>state.role)
   const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < rows.length;
   const selectedAll = rows.length > 0 && selected?.size === rows.length;
   const [open,setIsOpen]=useState(false);
-  const [open,setIsOpen]=useState(false);
  
-  const [newUser, setNewUser] = useState<User>({}); 
   const [newUser, setNewUser] = useState<User>({}); 
   const paginatedRows = usePagination({ rows, page, pageSize: rowsPerPage });
 
@@ -280,16 +270,12 @@ const handleClose=()=>{setIsOpen(false);}
                     <Button aria-label="modify" sx={{ display: 'contents' }} onClick={()=>handleModify(row)}>
     <ModifyIcon />
   </Button>
-  <Button aria-label="modify" sx={{ display: 'contents' }}   onClick={()=>handleDelete(row)}>
-
-                    <Button aria-label="modify" sx={{ display: 'contents' }} onClick={()=>handleModify(row)}>
-    <ModifyIcon />
-  </Button>
+ 
   <Button aria-label="modify" sx={{ display: 'contents' }}   onClick={()=>handleDelete(row)}>
 
                     <DeleteIcon/>
                     </Button>
-                    </Button>
+                  
                     </Stack>
                      </TableCell>
                 
