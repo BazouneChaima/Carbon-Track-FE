@@ -3,16 +3,16 @@ import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
-   
+  Checkbox,
+  Divider,
   Drawer,
- 
   Grid,
   IconButton,
   MenuItem,
   Select,
-  Slide,Divider,
+  Slide,
   TextField,
-  Typography,Checkbox,
+  Typography,
 } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 
@@ -112,154 +112,159 @@ const NewRole: React.FC<NewRoleProps> = ({ open, onClose, onCreateUser }) => {
                 alignSelf: 'stretch',
               }}
             >
-              <Typography variant="h5" sx={{color:'var(--Grey-grey-900, #1A1D21)'}}>Role Permissions</Typography>
-              <Typography variant="bodyP3" sx={{color:'var(--Grey-grey-400, #88909'}}>Customize role with specific permission to manage your software</Typography>
-              
+              <Typography variant="h5" sx={{ color: 'var(--Grey-grey-900, #1A1D21)' }}>
+                Role Permissions
+              </Typography>
+              <Typography variant="bodyP3" sx={{ color: 'var(--Grey-grey-400, #88909' }}>
+                Customize role with specific permission to manage your software
+              </Typography>
             </Box>
- 
 
-<Grid container spacing={2} display="flex" flexDirection="row">
-      {/* Grid items */}
+            <Grid container spacing={2} display="flex" flexDirection="row">
+              {/* Grid items */}
 
-      <Grid item xs={12} >
-      <Grid container spacing={2} alignItems="center">
-          <Grid item xs={6}>
-          <Typography variant="bodyB2" color="var(--Grey-grey-700, #4F5662)" style={{ margin: "0" }}>Admin Access</Typography>
-          </Grid>
-          <Grid item xs={4}>
-          <Box>
-            <Checkbox defaultChecked /> select all
-          </Box>
-          </Grid>
-          
-      
-        </Grid>
-        </Grid>
+              <Grid item xs={12}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={6}>
+                    <Typography variant="bodyB2" color="var(--Grey-grey-700, #4F5662)" style={{ margin: '0' }}>
+                      Admin Access
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Box>
+                      <Checkbox defaultChecked /> select all
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Grid>
 
+              <Grid item xs={12}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={6}>
+                    <Typography variant="bodyB2" color="var(--Grey-grey-700, #4F5662)" style={{ margin: '0' }}>
+                      User Management
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Read
+                    </Box>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Write
+                    </Box>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Create
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Grid>
 
+              <Divider style={{ margin: '1rem 0', backgroundColor: 'red', strokeWidt: '1px' }} />
+              {/* Repeat the same structure for other grid items */}
+              <Grid item xs={12}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={6}>
+                    <Typography variant="bodyB2" color="var(--Grey-grey-700, #4F5662)" style={{ margin: '0' }}>
+                      {' '}
+                      Emission tracking
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Read
+                    </Box>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Write
+                    </Box>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Create
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item xs={12}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={6}>
+                    <Typography variant="bodyB2" color="var(--Grey-grey-700, #4F5662)" style={{ margin: '0' }}>
+                      Tasks
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Read
+                    </Box>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Write
+                    </Box>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Create
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Grid>
 
-      <Grid item xs={12} >
-      <Grid container spacing={2} alignItems="center">
-          <Grid item xs={6}>
-          <Typography variant="bodyB2" color="var(--Grey-grey-700, #4F5662)" style={{ margin: "0" }}>User Management</Typography>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Read
-          </Box>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Write
-          </Box>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Create
-          </Box>
-          </Grid>
-      
-        </Grid>
-        </Grid>
-        
-  <Divider style={{ margin: "1rem 0", backgroundColor: "red" ,strokeWidt:"1px"}} />
-      {/* Repeat the same structure for other grid items */}
-      <Grid item xs={12}  >
-      <Grid container spacing={2} alignItems="center">
-          <Grid item xs={6}>
-          <Typography variant="bodyB2" color="var(--Grey-grey-700, #4F5662)" style={{ margin: "0" }}> Emission tracking</Typography>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Read
-          </Box>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Write
-          </Box>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Create
-          </Box>
-          </Grid>
-      </Grid>
+              <Grid item xs={12}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={6}>
+                    <Typography variant="bodyB2" color="var(--Grey-grey-700, #4F5662)" style={{ margin: '0' }}>
+                      Targets
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Read
+                    </Box>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Write
+                    </Box>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Create
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Grid>
 
-      </Grid>
-      <Grid item xs={12}  >
-      <Grid container spacing={2} alignItems="center">
-          <Grid item xs={6}>
-          <Typography variant="bodyB2" color="var(--Grey-grey-700, #4F5662)" style={{ margin: "0" }}>Tasks</Typography>
-          </Grid>
-           <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Read
-          </Box>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Write
-          </Box>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Create
-          </Box>
-          </Grid>
-          </Grid>
-      </Grid>
-
-      <Grid item xs={12}  >
-      <Grid container spacing={2} alignItems="center">
-          <Grid item xs={6}>
-          <Typography variant="bodyB2" color="var(--Grey-grey-700, #4F5662)" style={{ margin: "0" }}>Targets</Typography>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Read
-          </Box>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Write
-          </Box>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Create
-          </Box>
-          </Grid>
-         </Grid>
-      </Grid>
-
-
-
-
-      <Grid item xs={12}  >
-      <Grid container spacing={2} alignItems="center">
-          <Grid item xs={6}>
-          <Typography variant="bodyB2" color="var(--Grey-grey-700, #4F5662)" style={{ margin: "0" }}>Reports</Typography>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Read
-          </Box>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Write
-          </Box>
-          </Grid>
-          <Grid item xs={2}>
-          <Box>
-            <Checkbox defaultChecked /> Create
-          </Box>
-          </Grid>
-         </Grid>
-      </Grid>
-</Grid>
-
+              <Grid item xs={12}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={6}>
+                    <Typography variant="bodyB2" color="var(--Grey-grey-700, #4F5662)" style={{ margin: '0' }}>
+                      Reports
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Read
+                    </Box>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Write
+                    </Box>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Box>
+                      <Checkbox defaultChecked /> Create
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
           </Box>
           <Divider sx={{ mt: 2 }} />
           <Grid sx={FooterBox}>
@@ -294,7 +299,7 @@ const NewRole: React.FC<NewRoleProps> = ({ open, onClose, onCreateUser }) => {
                 </Typography>
               </Button>
             </Grid>
-          </Grid> 
+          </Grid>
         </Box>
       </Slide>
     </Drawer>
