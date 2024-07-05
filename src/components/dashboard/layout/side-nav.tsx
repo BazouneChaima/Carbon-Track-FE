@@ -38,7 +38,7 @@ export function SideNav({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSide
   const getImage = React.useCallback(async (): Promise<void> => {
     const { res } = await companyApis.getImage(company._id);
 
-    const blob = new Blob([res.data], { type: 'image/jpeg' });
+    const blob = new Blob([res?.data], { type: 'image/jpeg' });
     const imageUrl = URL.createObjectURL(blob);
     setImage(imageUrl);
   }, [company]);

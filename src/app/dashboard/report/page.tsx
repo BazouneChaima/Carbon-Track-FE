@@ -120,7 +120,7 @@ export default function Page(): React.JSX.Element {
           open={isOpen}
           onClose={() => {
             setIsOpen(!isOpen);
-            dispatch(clearColumnMapped())
+            
           }}
           /* onNext={handleNext}  */
         />
