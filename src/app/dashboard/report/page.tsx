@@ -10,6 +10,7 @@ import { CarbonEmissionsCategory } from '@/components/dashboard/overview/CarbonE
 import { MonthlyCarbonEmissions } from '@/components/dashboard/overview/MonthlyCarbonEmissions';
 import Scopes from "@/components/dashboard/overview/Scopes"
 
+import ButtomDrower from '@/components/dashboard/reports/ButtomDrower';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReportsTable } from '@/components/dashboard/reports/reports-table';
 import dayjs from 'dayjs';
@@ -36,6 +37,7 @@ export default function Page(): React.JSX.Element {
   const [selectedTab, setSelectedTab] = useState<string>('7 Days');
   const page = 0;
   const rowsPerPage = 3;
+  const [isOpen, setIsOpen] = useState(false);
 
   const { targets } = useSelector((state: any) => state.target);
   const [target, setTarget] = React.useState<Target>({});
@@ -57,7 +59,7 @@ export default function Page(): React.JSX.Element {
     document.body.removeChild(a);
   }
   const handleExportClick = () => {
-    downloadCSV(reports, 'reports.csv');
+    setIsOpen(!isOpen);
   };
   function convertToCSV(data) {
     const csvRows = [];
@@ -113,7 +115,16 @@ export default function Page(): React.JSX.Element {
     </Grid>
     <ReportsTable count={paginatedTarget.length} page={page} rows={reports} rowsPerPage={rowsPerPage} />
      
- 
+    {isOpen && (
+        <ButtomDrower
+          open={isOpen}
+          onClose={() => {
+            setIsOpen(!isOpen);
+            dispatch(clearColumnMapped())
+          }}
+          /* onNext={handleNext}  */
+        />
+      )}
        
     </Box>
   );

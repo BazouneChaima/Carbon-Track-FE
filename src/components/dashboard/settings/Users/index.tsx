@@ -12,8 +12,7 @@ import Slide from '@mui/material/Slide';
 import {header,body,HeaderBody,FooterBody,FooterBox} from '@/styles/theme/Bottom-drawer';
 import CloseIcon from '@mui/icons-material/Close';
 import NewUser from "./NewUser"
-import UserDrawer from './UserDrawer';
-import { useDispatch,useSelector } from 'react-redux';
+
 import UserDrawer from './UserDrawer';
 import { useDispatch,useSelector } from 'react-redux';
 import Avatar from '@mui/material/Avatar';
@@ -23,11 +22,7 @@ import {userApis} from '@/lib/user/userApis';
 import {User} from '@/types/user';
 import { roleApis } from '@/lib/role/roleApis';
 import {setRoles} from '@/lib/store/reducer/useRole';
-import { setUsers } from '@/lib/store/reducer/userSlice';
-import {userApis} from '@/lib/user/userApis';
-import {User} from '@/types/user';
-import { roleApis } from '@/lib/role/roleApis';
-import {setRoles} from '@/lib/store/reducer/useRole';
+
 interface UsersProps {
   children?: React.ReactNode;
   index: number;
@@ -80,20 +75,8 @@ export   function Users() {
   const [paginatedUser, setPaginatedUser] = useState<User[]>([]);
 const {roles}=useSelector((state:any)=>state.role)
   const { users } = useSelector((state: any) => state.user);
-  const dispatch=useDispatch();
-  const [user, setUser] = useState<User>({});
-  const page = 0;
-  const rowsPerPage = 3;
-  const [paginatedUser, setPaginatedUser] = useState<User[]>([]);
-const {roles}=useSelector((state:any)=>state.role)
-  const { users } = useSelector((state: any) => state.user);
-  const dispatch=useDispatch();
-  const [user, setUser] = useState<User>({});
-  const page = 0;
-  const rowsPerPage = 3;
-  const [paginatedUser, setPaginatedUser] = useState<User[]>([]);
-const {roles}=useSelector((state:any)=>state.role)
-  const { users } = useSelector((state: any) => state.user);
+ 
+ 
   const handleNewUser=()=>{
     setIsNewUser(!isNewUser); 
     getRoles();
@@ -228,20 +211,19 @@ const handleClose=()=>{setIsNewUser(false);}
 </Grid>
  
    
-      <UsersTable
-          count={paginatedUser.length}
-          count={paginatedUser.length}
+<UsersTable
+          pages={pages} 
           page={page}
-          rows={users}
-          rows={users}
-          rowsPerPage={rowsPerPage}
+          rows={users}  
+          rowsPerPage={rowsPerPage} 
+          handleChangePage={handleChangePage}
+          
         />
  
         
      
 
-{isNewUser  && (
-<UserDrawer
+ 
  
         
      
@@ -255,16 +237,9 @@ open={isNewUser} handleCancelUser={handleClose} userUpdate={user} roles={roles} 
 
 />
   )}
-open={isNewUser} handleCancelUser={handleClose} userUpdate={user} roles={roles} headerName="Add User" isUpdate={false}
-
  
-
-/>
-  )}
+  
     </Stack>
   );
 }
-function applyPagination(rows: any[], page: number, rowsPerPage: number): User[] {
-function applyPagination(rows: any[], page: number, rowsPerPage: number): User[] {
-  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-}
+ 
