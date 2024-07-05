@@ -3,6 +3,8 @@
 import * as React from 'react';
 import { redirect } from 'next/navigation';
 
+import { redirect } from 'next/navigation';
+
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
@@ -10,6 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import InputBase from '@mui/material/InputBase';
 import Stack from '@mui/material/Stack';
+import { paths } from '@/paths';
 import { paths } from '@/paths';
 import Tooltip from '@mui/material/Tooltip';
 import { Bell as BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
@@ -30,6 +33,9 @@ import { palette } from '@/styles/theme/colors';
 import { setTarget } from '@/lib/store/reducer/useTarget';
 
 import { setTask } from '@/lib/store/reducer/useTask';
+import { setTarget } from '@/lib/store/reducer/useTarget';
+
+import { setTask } from '@/lib/store/reducer/useTask';
 import { MobileNav } from './mobile-nav';
 import { NotificationPopover } from './notification-popover';
 import { UserPopover } from './user-popover';
@@ -47,14 +53,17 @@ const socket = io('http://localhost:5000');
 
 export function MainNav(): React.JSX.Element {
   const router = useRouter();
+  const router = useRouter();
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   const [searchValue, setSearchValue] = React.useState<string>(''); // State for search value
+  const [isSearching,setIsSearching]=React.useState('false');
   const [isSearching,setIsSearching]=React.useState('false');
   const userPopover = usePopover<HTMLDivElement>();
   const notificationPopover = usePopover<HTMLDivElement>();
   const { isOpenToast, message, type } = useSelector((state: any) => state.globalActions);
   const dispatch = useDispatch();
-  const { user } = useSelector((state: any) => state.user);
+  const [openModal, setOpenModal] = React.useState(false);
+  const [searchResults, setSearchResults] = React.useState<any[]>([]);
   const [profileImage, setProfileImage] = React.useState(null);
   const { notifications } = useSelector((state: any) => state.notification);
   const hasSentStatus = notifications.some((item) => item.status === 'SENT');
