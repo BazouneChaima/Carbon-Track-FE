@@ -2,9 +2,6 @@
 
 import * as React from 'react';
 import { redirect } from 'next/navigation';
-
-import { redirect } from 'next/navigation';
-
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
@@ -13,13 +10,11 @@ import InputAdornment from '@mui/material/InputAdornment';
 import InputBase from '@mui/material/InputBase';
 import Stack from '@mui/material/Stack';
 import { paths } from '@/paths';
-import { paths } from '@/paths';
 import Tooltip from '@mui/material/Tooltip';
 import { Bell as BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
-import { useDispatch, useSelector } from 'react-redux';
 import io from 'socket.io-client';
 import { Button, Modal,Typography } from '@mui/material';
 import { setCloseToast, setOpenToast } from '@/lib/store/reducer/useGlobalActions';
@@ -30,9 +25,7 @@ import ThemeToggle from '@/components/commun/ThemeToggle/ThemeToggle';
 import Toast from '@/components/commun/Toast/Toast';
 import { palette } from '@/styles/theme/colors';
 
-import { setTarget } from '@/lib/store/reducer/useTarget';
 
-import { setTask } from '@/lib/store/reducer/useTask';
 import { setTarget } from '@/lib/store/reducer/useTarget';
 
 import { setTask } from '@/lib/store/reducer/useTask';
@@ -40,8 +33,6 @@ import { MobileNav } from './mobile-nav';
 import { NotificationPopover } from './notification-popover';
 import { UserPopover } from './user-popover';
 import { useDispatch, useSelector } from 'react-redux';
-import Toast from '@/components/commun/Toast/Toast';
-import { setCloseToast } from '@/lib/store/reducer/useGlobalActions';
 import {searchApis} from '@/lib/searching/searching'; 
 
 import {  useRouter } from 'next/navigation';
@@ -53,18 +44,14 @@ const socket = io('http://localhost:5000');
 
 export function MainNav(): React.JSX.Element {
   const router = useRouter();
-  const router = useRouter();
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   const [searchValue, setSearchValue] = React.useState<string>(''); // State for search value
-  const [isSearching,setIsSearching]=React.useState('false');
   const [isSearching,setIsSearching]=React.useState('false');
   const userPopover = usePopover<HTMLDivElement>();
   const notificationPopover = usePopover<HTMLDivElement>();
   const { isOpenToast, message, type } = useSelector((state: any) => state.globalActions);
+  const { user } = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
-  const [openModal, setOpenModal] = React.useState(false);
-  const [searchResults, setSearchResults] = React.useState<any[]>([]);
-  const [profileImage, setProfileImage] = React.useState(null);
   const { notifications } = useSelector((state: any) => state.notification);
   const hasSentStatus = notifications.some((item) => item.status === 'SENT');
   const getImage = React.useCallback(
